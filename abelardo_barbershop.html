@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Abelardo Barber Shop | Est. 2006</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Barlow+Condensed:wght@400;500;600;700;800&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black:      #0c0b09;
+            --dark:       #131210;
+            --card:       #1a1815;
+            --card2:      #201e1a;
+            --border:     #2e2a24;
+            --border2:    #3d3830;
+            --red:        #c9292a;
+            --red-dark:   #a31f20;
+            --red-glow:   rgba(201,41,42,0.12);
+            --blue:       #1a4fa8;
+            --blue-light: #2563c7;
+            --cream:      #f0ece3;
+            --cream2:     #d4cfc4;
+            --gold:       #c9a84c;
+            --gold-light: #e8c96a;
+            --muted:      #7a7060;
+            --muted2:     #55504a;
+            --white:      #f0ece3;
+        }
+
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+        html { scroll-behavior:smooth; }
+        body { font-family:'Barlow',sans-serif; background:var(--black); color:var(--cream); overflow-x:hidden; }
+
+        /* ═══ NAV ═══ */
+        .nav {
+            position:fixed; top:0; left:0; right:0; z-index:999;
+            display:flex; justify-content:space-between; align-items:center;
+            padding:0.8rem 2rem;
+            background:rgba(12,11,9,0.95);
+            backdrop-filter:blur(16px);
+            border-bottom:1px solid var(--border);
+            transform:translateY(-100%);
+            transition:transform 0.4s ease;
+        }
+        .nav.visible { transform:translateY(0); }
+        .nav-logo {
+            font-family:'Playfair Display',serif;
+            font-size:1.1rem; font-style:italic;
+            color:var(--cream); letter-spacing:0.05em;
+        }
+        .nav-logo span { color:var(--red); font-style:normal; }
+        .nav-links { display:flex; gap:1.5rem; align-items:center; }
+        .nav-link {
+            font-family:'Barlow Condensed',sans-serif;
+            font-size:0.78rem; font-weight:600;
+            text-transform:uppercase; letter-spacing:0.12em;
+            color:var(--muted); text-decoration:none;
+            transition:color 0.2s;
+        }
+        .nav-link:hover { color:var(--cream); }
+        .nav-btn {
+            padding:0.45rem 1.1rem; border-radius:4px;
+            font-family:'Barlow Condensed',sans-serif;
+            font-size:0.75rem; font-weight:700;
+            text-transform:uppercase; letter-spacing:0.1em;
+            cursor:pointer; border:none; text-decoration:none;
+            transition:all 0.2s;
+        }
+        .nav-btn-red { background:var(--red); color:var(--cream); }
+        .nav-btn-red:hover { background:var(--red-dark); }
+
+        /* ═══ HERO ═══ */
+        .hero {
+            position:relative; min-height:100vh;
+            display:flex; flex-direction:column;
+            align-items:center; justify-content:center;
+            text-align:center; padding:6rem 2rem 4rem;
+            overflow:hidden;
+        }
+        .hero-bg {
+            position:absolute; inset:0;
+            background:
+                radial-gradient(ellipse 80% 60% at 50% 40%, rgba(201,41,42,0.06) 0%, transparent 65%),
+                radial-gradient(ellipse 60% 40% at 50% 80%, rgba(26,79,168,0.05) 0%, transparent 60%);
+            pointer-events:none;
+        }
+        .hero-stripes {
+            position:absolute; inset:0;
+            background-image:
+                repeating-linear-gradient(
+                    -55deg,
+                    transparent 0px, transparent 40px,
+                    rgba(255,255,255,0.012) 40px, rgba(255,255,255,0.012) 41px
+                );
+            pointer-events:none;
+            mask-image:radial-gradient(ellipse at center, black 20%, transparent 75%);
+        }
+        .hero-ornament {
+            position:absolute; top:0; left:0; right:0;
+            height:3px;
+            background:linear-gradient(90deg, transparent, var(--red), var(--blue), var(--red), transparent);
+        }
+
+        .hero-badge {
+            display:inline-flex; align-items:center; gap:0.5rem;
+            font-family:'Barlow Condensed',sans-serif;
+            font-size:0.68rem; font-weight:700;
+            text-transform:uppercase; letter-spacing:0.3em;
+            color:var(--gold); margin-bottom:1.8rem;
+            animation:fadeUp 0.6s 0.1s ease both;
+        }
+        .hero-badge::before, .hero-badge::after {
+            content:''; display:block;
+            width:30px; height:1px; background:var(--gold); opacity:0.5;
+        }
+
+        .hero-eyebrow {
+            font-family:'Barlow Condensed',sans-serif;
+            font-size:0.85rem; font-weight:600;
+            text-transform:uppercase; letter-spacing:0.5em;
+            color:var(--muted); margin-bottom:0.8rem;
+            animation:fadeUp 0.6s 0.15s ease both;
+        }
+
+        .hero-title {
+            font-family:'Playfair Display',serif;
+            font-size:clamp(1.6rem, 5vw, 2.6rem);
+            font-weight:400; font-style:italic;
+            letter-spacing:0.04em; color:var(--muted);
+            line-height:1; margin-bottom:0.2rem;
+            animation:fadeUp 0.6s 0.2s ease both;
+        }
+        .hero-title-main {
+            font-family:'Barlow Condensed',sans-serif;
+            font-size:clamp(6rem, 20vw, 13rem);
+            font-weight:800; line-height:0.88;
+            text-transform:uppercase; letter-spacing:-0.02em;
+            color:var(--cream);
+            -webkit-text-stroke:1px rgba(240,236,227,0.2);
+            animation:fadeUp 0.7s 0.25s ease both;
+        }
+        .hero-title-main .red { color:var(--red); -webkit-text-stroke:0; }
+        .hero-title-sub {
+            font-family:'Barlow Condensed',sans-serif;
+            font-size:clamp(1.4rem, 5vw, 2.8rem);
+            font-weight:600; letter-spacing:0.5em;
+            text-transform:uppercase; color:var(--cream2);
+            margin-top:0.4rem;
+            animation:fadeUp 0.6s 0.3s ease both;
+        }
+        .hero-divider {
+            display:flex; align-items:center; gap:1rem;
+            margin:1.5rem 0; justify-content:center;
+            animation:fadeUp 0.6s 0.35s ease both;
+        }
+        .hero-divider-line { width:60px; height:1px; background:var(--border2); }
+        .hero-divider-pole { font-size:1.6rem; }
+        .hero-est {
+            font-family:'Barlow Condensed',sans-serif;
+            font-size:0.9rem; font-weight:600;
+            letter-spacing:0.4em; text-transform:uppercase;
+            color:var(--gold); opacity:0.8;
+        }
+        .hero-sub {
+            font-size:1rem; color:var(--muted);
+            max-width:400px; line-height:1.7; margin:0 auto 2rem;
+            animation:fadeUp 0.6s 0.4s ease both;
+        }
+        .hero-cta {
+            display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;
+            animation:fadeUp 0.6s 0.5s ease both;
+        }
+        .cta-primary {
+            background:var(--red); color:var(--cream);
+            padding:0.9rem 2.2rem; border-radius:3px;
+            font-family:'Barlow Condensed',sans-serif;
+            font-weight:700; font-size:0.95rem;
+            text-transform:uppercase; letter-spacing:0.15em;
+            text-decoration:none;
+            border:2px solid var(--red);
+            transition:all 0.2s;
+        }
+        .cta-primary:hover { background:transparent; color:var(--red); }
+        .cta-secondary {
+            background:transparent; color:var(--cream);
+            padding:0.9rem 2.2rem; border-radius:3px;
+            font-family:'Barlow Condensed',sans-serif;
+            font-weight:600; font-size:0.95rem;
+            text-transform:uppercase; letter-spacing:0.15em;
+            text-decoration:none;
+            border:2px solid var(--border2);
+            transition:all 0.2s;
+        }
+        .cta-secondary:hover { border-color:var(--cream2); }
+
+        .scroll-hint {
+            position:absolute; bottom:1.5rem; left:50%; transform:translateX(-50%);
+            display:flex; flex-direction:column; align-items:center; gap:0.5rem;
+            color:var(--muted2); font-family:'Barlow Condensed',sans-serif;
+            font-size:0.6rem; letter-spacing:0.3em; text-transform:uppercase;
+            animation:fadeUp 1s 1.3s ease both;
+        }
+        .scroll-line {
+            width:1px; height:36px;
+            background:linear-gradient(to bottom, var(--red), transparent);
+            animation:scrollAnim 2.2s ease-in-out infinite;
+        }
+        @keyframes scrollAnim { 0%,100%{opacity:0.3;transform:scaleY(1)} 50%{opacity:1;transform:scaleY(1.2)} }
+
+        /* ═══ STATS ═══ */
+        .stats-band {
+            border-top:1px solid var(--border);
+            border-bottom:1px solid var(--border);
+            display:grid; grid-template-columns:repeat(4,1fr);
+        }
+        .stat-item {
+            padding:2rem 1rem; text-align:center;
+            border-right:1px solid var(--border);
+            position:relative;
+        }
+        .stat-item:last-child { border-right:none; }
+        .stat-num {
+            font-family:'Barlow Condensed',sans-serif;
+            font-size:2.6rem; font-weight:800;
+            color:var(--red); display:block; line-height:1;
+        }
+        .stat-suffix { font-size:1.2rem; color:var(--gold); }
+        .stat-desc {
+            font-family:'Barlow Condensed',sans-serif;
+            font-size:0.68rem; color:var(--muted);
+            text-transform:uppercase; letter-spacing:0.12em; margin-top:0.4rem;
+        }
+
+        /* ═══ SECCIÓN GENERAL ═══ */
+        .section { padding:5rem 2rem; max-width:900px; margin:0 auto; }
+        .section-label {
+            font-family:'Barlow Condensed',sans-serif;
+            font-size:0.65rem; font-weight:700;
+            letter-spacing:0.4em; text-transform:uppercase;
+            color:var(--red); margin-bottom:0.5rem;
+        }
+        .section-title {
+            font-family:'Playfair Display',serif;
+            font-size:clamp(1.8rem,4vw,2.6rem);
+            color:var(--cream); margin-bottom:0.3rem;
+            line-height:1.15;
+        }
+        .section-title em { color:var(--red); font-style:italic; }
+        .section-subtitle {
+            font-size:0.92rem; color:var(--muted);
+            margin-bottom:2.5rem; line-height:1.7;
+        }
+        .divider-line {
+            display:flex; align-items:center; gap:1rem;
+            margin:3rem 0;
+        }
+        .divider-line::before, .divider-line::after {
+            content:''; flex:1; height:1px; background:var(--border);
+        }
+        .divider-line span {
+            font-family:'Barlow Condensed',sans-serif;
+            font-size:0.65rem; letter-spacing:0.3em;
+            text-transform:uppercase; color:var(--muted2);
+        }
+
+        /* ═══ SERVICIOS ═══ */
+        .services-grid {
+            display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+            gap:1px; border:1px solid var(--border); border-radius:8px; overflow:hidden;
+            margin-bottom:0.5rem;
+        }
+        .service-card {
+            background:var(--card); padding:1.8rem 1.5rem;
+            border-right:1px solid var(--border);
+            transition:background 0.25s;
+            position:relative; overflow:hidden;
+        }
+        .service-card::before {
+            content:''; position:absolute; bottom:0; left:0; right:0;
+            height:2px; background:linear-gradient(90deg,var(--red),var(--blue));
+            transform:scaleX(0); transform-origin:left;
+            transition:transform 0.3s ease;
+        }
+        .service-card:hover { background:var(--card2); }
+        .service-card:hover::before { transform:scaleX(1); }
+        .service-card:last-child { border-right:none; }
+        .service-icon {
+            font-size:1.8rem; margin-bottom:0.8rem; display:block;
+        }
+        .service-name {
+            font-family:'Barlow Condensed',sans-serif;
+            font-size:1.1rem; font-weight:700;
+            text-transform:uppercase; letter-spacing:0.08em;
+            color:var(--cream); margin-bottom:0.3rem;
+        }
+        .service-desc { font-size:0.82rem; color:var(--muted); line-height:1.5; margin-bottom:1rem; }
+        .service-price {
+            font-family:'Barlow Condensed',sans-serif;
+            font-size:1.5rem; font-weight:800; color:var(--gold);
+        }
+        .service-price small { font-size:0.75rem; color:var(--muted); font-weight:400; }
+
+        /* ═══ GALERÍA ═══ */
+        .gallery-placeholder {
+            display:grid; grid-template-columns:repeat(3,1fr);
+            gap:3px; margin-bottom:1.5rem;
+            border-radius:6px; overflow:hidden;
+        }
+        .gallery-item {
+            background:var(--card); aspect-ratio:1/1;
+            display:flex; flex-direction:column;
+            align-items:center; justify-content:center;
+            gap:0.5rem; border:1px solid var(--border);
+            transition:background 0.2s; cursor:pointer;
+        }
+        .gallery-item:hover { background:var(--card2); }
+        .gallery-item span { font-size:1.8rem; }
+        .gallery-item p {
+            font-family:'Barlow Condensed',sans-serif;
+            font-size:0.62rem; letter-spacing:0.2em;
+            text-transform:uppercase; color:var(--muted);
+        }
+        .gallery-note {
+            text-align:center;
+            font-size:0.8rem; color:var(--muted);
+            background:var(--card); border:1px solid var(--border);
+            border-radius:6px; padding:1rem;
+        }
+        .gallery-note a { color:var(--red); text-decoration:none; }
+        .gallery-note a:hover { text-decoration:underline; }
+
+        /* ═══ RESERVAS ═══ */
+        .booking-card {
+            background:var(--card); border:1px solid var(--border);
+            border-radius:8px; padding:2rem 1.8rem;
+            margin-bottom:1.5rem;
+        }
+        .form-section-title {
+            font-family:'Barlow Condensed',sans-serif;
+            font-size:0.68rem; font-weight:700;
+            text-transform:uppercase; letter-spacing:0.2em;
+            color:var(--gold); margin:1.5rem 0 0.8rem;
+            padding-bottom:0.6rem; border-bottom:1px solid var(--border);
+        }
+        .form-section-title:first-child { margin-top:0; }
+        .form-row { display:grid; grid-template-columns:1fr 1fr; gap:0.8rem; }
+        .field { display:flex; flex-direction:column; gap:0.35rem; margin-bottom:0.75rem; }
+        .field label {
+            font-family:'Barlow Condensed',sans-serif;
+            font-size:0.65rem; font-weight:700;
+            text-transform:uppercase; letter-spacing:0.18em; color:var(--muted);
+        }
+        .field input,.field select,.field textarea {
+            background:var(--dark); border:1px solid var(--border);
+            border-radius:4px; padding:0.85rem 1rem;
+            font-family:'Barlow',sans-serif; font-size:0.9rem;
+            color:var(--cream); outline:none; width:100%;
+            -webkit-appearance:none;
+            transition:border-color 0.2s, box-shadow 0.2s;
+        }
+        .field input:focus,.field select:focus,.field textarea:focus {
+            border-color:var(--red);
+            box-shadow:0 0 0 3px var(--red-glow);
+        }
+        .field select option { background:var(--dark); }
+        .field input::placeholder,.field textarea::placeholder { color:#3a3530; }
+        .btn-submit {
+            width:100%; background:var(--red); color:var(--cream);
+            border:2px solid var(--red); border-radius:4px; padding:1.05rem;
+            font-family:'Barlow Condensed',sans-serif;
+            font-size:1rem; font-weight:700;
+            text-transform:uppercase; letter-spacing:0.15em;
+            cursor:pointer; margin-top:0.8rem;
+            transition:all 0.2s;
+        }
+        .btn-submit:hover { background:transparent; color:var(--red); }
+        .btn-submit:disabled { opacity:0.6; cursor:not-allowed; }
+        .form-note {
+            text-align:center; font-size:0.73rem;
+            color:var(--muted2); margin-top:0.9rem;
+        }
+
+        /* ═══ PAGOS PANEL ═══ */
+        .tabs-wrapper { margin-bottom:1.5rem; }
+        .tabs {
+            display:flex; border:1px solid var(--border);
+            border-radius:6px; overflow:hidden; margin-bottom:1.5rem;
+        }
+        .tab-btn {
+            flex:1; padding:0.85rem;
+            font-family:'Barlow Condensed',sans-serif;
+            font-size:0.82rem; font-weight:700;
+            text-transform:uppercase; letter-spacing:0.12em;
+            background:var(--dark); color:var(--muted);
+            border:none; cursor:pointer;
+            border-right:1px solid var(--border);
+            transition:all 0.2s;
+        }
+        .tab-btn:last-child { border-right:none; }
+        .tab-btn.active { background:var(--red); color:var(--cream); }
+        .tab-btn:not(.active):hover { background:var(--card); color:var(--cream); }
+        .tab-panel { display:none; }
+        .tab-panel.active { display:block; }
+
+        /* ═══ UBICACIÓN ═══ */
+        .contact-grid {
+            display:grid; grid-template-columns:1fr 1fr; gap:1rem;
+            margin-bottom:1.5rem;
+        }
+        .contact-card {
+            background:var(--card); border:1px solid var(--border);
+            border-radius:6px; padding:1.5rem;
+            display:flex; gap:1rem; align-items:flex-start;
+            transition:border-color 0.2s;
+        }
+        .contact-card:hover { border-color:var(--red); }
+        .contact-icon { font-size:1.6rem; flex-shrink:0; }
+        .contact-title {
+            font-family:'Barlow Condensed',sans-serif;
+            font-size:0.68rem; font-weight:700;
+            text-transform:uppercase; letter-spacing:0.15em;
+            color:var(--muted); margin-bottom:0.3rem;
+        }
+        .contact-value { font-size:0.9rem; color:var(--cream); line-height:1.5; }
+        .contact-value a { color:var(--red); text-decoration:none; }
+        .map-placeholder {
+            background:var(--card); border:1px solid var(--border);
+            border-radius:6px; height:220px;
+            display:flex; flex-direction:column;
+            align-items:center; justify-content:center;
+            gap:0.8rem; margin-bottom:0;
+        }
+        .map-placeholder span { font-size:2rem; }
+        .map-placeholder p {
+            font-family:'Barlow Condensed',sans-serif;
+            font-size:0.72rem; letter-spacing:0.2em;
+            text-transform:uppercase; color:var(--muted);
+        }
+        .map-placeholder a {
+            font-family:'Barlow Condensed',sans-serif;
+            font-size:0.78rem; font-weight:700;
+            text-transform:uppercase; letter-spacing:0.15em;
+            color:var(--red); text-decoration:none;
+            border:1px solid var(--red); padding:0.4rem 1rem; border-radius:3px;
+            transition:all 0.2s;
+        }
+        .map-placeholder a:hover { background:var(--red); color:var(--cream); }
+
+        /* ═══ HORARIO ═══ */
+        .schedule-grid {
+            display:grid; grid-template-columns:repeat(7,1fr);
+            gap:0.5rem; margin-bottom:1.5rem;
+        }
+        .schedule-day {
+            background:var(--card); border:1px solid var(--border);
+            border-radius:6px; padding:0.8rem 0.4rem;
+            text-align:center;
+        }
+        .schedule-day.open { border-color:var(--border2); }
+        .schedule-day.closed { opacity:0.4; }
+        .day-name {
+            font-family:'Barlow Condensed',sans-serif;
+            font-size:0.62rem; font-weight:700;
+            text-transform:uppercase; letter-spacing:0.1em;
+            color:var(--muted); margin-bottom:0.4rem;
+        }
+        .day-hours {
+            font-family:'Barlow Condensed',sans-serif;
+            font-size:0.72rem; color:var(--cream); line-height:1.3;
+        }
+        .day-hours.closed-text { color:var(--muted2); }
+
+        /* ═══ TRUST / BANNER ═══ */
+        .trust-banner {
+            background:linear-gradient(135deg, var(--card) 0%, var(--card2) 100%);
+            border:1px solid var(--border); border-radius:8px;
+            padding:1.5rem 2rem;
+            display:flex; align-items:center; gap:1.2rem;
+            margin-bottom:2rem;
+        }
+        .trust-icon { font-size:1.6rem; flex-shrink:0; }
+        .trust-text { font-size:0.85rem; color:var(--muted); line-height:1.5; }
+        .trust-text strong { color:var(--cream); }
+
+        /* ═══ INQUILINOS SECTION ═══ */
+        .barber-tabs {
+            display:flex; border:1px solid var(--border); border-radius:6px;
+            overflow:hidden; margin-bottom:1.5rem;
+        }
+        .barber-tab {
+            flex:1; padding:0.75rem;
+            font-family:'Barlow Condensed',sans-serif;
+            font-size:0.78rem; font-weight:700;
+            text-transform:uppercase; letter-spacing:0.1em;
+            background:var(--dark); color:var(--muted);
+            border:none; cursor:pointer;
+            border-right:1px solid var(--border);
+            transition:all 0.2s;
+        }
+        .barber-tab:last-child { border-right:none; }
+        .barber-tab.active { background:var(--gold); color:var(--black); }
+        .barber-tab:not(.active):hover { background:var(--card); color:var(--cream); }
+        .barber-panel { display:none; }
+        .barber-panel.active { display:block; }
+
+        /* ═══ FILE UPLOAD ═══ */
+        .file-label {
+            display:flex; flex-direction:column; align-items:center;
+            justify-content:center; gap:0.4rem;
+            background:var(--dark); border:1.5px dashed var(--border);
+            border-radius:4px; padding:1.2rem; cursor:pointer;
+            transition:border-color 0.2s, background 0.2s; text-align:center;
+        }
+        .file-label:hover { border-color:var(--red); background:var(--red-glow); }
+        .file-label input[type="file"] { display:none; }
+        .file-icon-lbl { font-size:1.4rem; }
+        .file-text { font-size:0.76rem; color:var(--muted); line-height:1.4; }
+        .file-text strong { color:var(--red); font-weight:500; }
+        .file-name {
+            font-size:0.7rem; color:var(--gold); margin-top:0.25rem; display:none;
+        }
+
+        /* ═══ FOOTER ═══ */
+        footer {
+            border-top:1px solid var(--border);
+            background:var(--dark);
+            padding:3rem 2rem 2rem; text-align:center;
+        }
+        .footer-logo {
+            font-family:'Playfair Display',serif;
+            font-size:1.4rem; font-style:italic;
+            color:var(--cream); margin-bottom:0.3rem;
+        }
+        .footer-logo strong {
+            font-family:'Barlow Condensed',sans-serif;
+            font-size:2rem; font-style:normal; font-weight:800;
+            display:block; text-transform:uppercase; letter-spacing:0.05em;
+        }
+        .footer-logo strong span { color:var(--red); }
+        .footer-tagline {
+            font-family:'Barlow Condensed',sans-serif;
+            font-size:0.65rem; color:var(--muted); letter-spacing:0.4em;
+            text-transform:uppercase; margin-bottom:1.5rem;
+        }
+        .footer-links {
+            display:flex; gap:2rem; justify-content:center;
+            margin-bottom:1.5rem; flex-wrap:wrap;
+        }
+        .footer-link {
+            font-family:'Barlow Condensed',sans-serif;
+            font-size:0.72rem; font-weight:600;
+            text-transform:uppercase; letter-spacing:0.15em;
+            color:var(--muted); text-decoration:none;
+            transition:color 0.2s;
+        }
+        .footer-link:hover { color:var(--red); }
+        .footer-copy { font-size:0.7rem; color:var(--muted2); }
+        .footer-stripe {
+            height:3px; margin-bottom:2.5rem;
+            background:linear-gradient(90deg, transparent, var(--red) 25%, var(--blue) 50%, var(--red) 75%, transparent);
+        }
+
+        /* ═══ WHATSAPP ═══ */
+        .wa-float {
+            position:fixed; bottom:1.5rem; right:1.5rem; z-index:998;
+            display:flex; align-items:center; gap:0.7rem;
+            background:#25D366; color:#fff; border-radius:50px;
+            padding:0.75rem 1.2rem 0.75rem 0.95rem;
+            text-decoration:none; font-weight:700;
+            font-family:'Barlow Condensed',sans-serif;
+            font-size:0.82rem; text-transform:uppercase; letter-spacing:0.1em;
+            box-shadow:0 4px 20px rgba(37,211,102,0.35);
+            transition:transform 0.2s, box-shadow 0.2s;
+            animation:fadeUp 1s 1.5s ease both;
+        }
+        .wa-float:hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(37,211,102,0.5); }
+        .wa-float svg { width:20px; height:20px; fill:white; flex-shrink:0; }
+
+        /* ═══ ANIMACIONES ═══ */
+        @keyframes fadeUp { from{opacity:0;transform:translateY(22px)} to{opacity:1;transform:translateY(0)} }
+        .fade-in { opacity:0; transform:translateY(28px); transition:opacity 0.65s ease,transform 0.65s ease; }
+        .fade-in.visible { opacity:1; transform:translateY(0); }
+
+        /* ═══ RESPONSIVE ═══ */
+        @media(max-width:640px){
+            .stats-band { grid-template-columns:repeat(2,1fr); }
+            .stat-item:nth-child(2){ border-right:none; }
+            .stat-item:nth-child(3){ border-top:1px solid var(--border); }
+            .stat-item:nth-child(4){ border-top:1px solid var(--border); border-right:none; }
+            .form-row { grid-template-columns:1fr; }
+            .contact-grid { grid-template-columns:1fr; }
+            .schedule-grid { grid-template-columns:repeat(4,1fr); }
+            .nav-links { display:none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="main-nav">
+    <div class="nav-logo">The <span>Abelardo</span> Barber Shop</div>
+    <div class="nav-links">
+        <a href="#servicios" class="nav-link">Servicios</a>
+        <a href="#galeria" class="nav-link">Galería</a>
+        <a href="#reservas" class="nav-link">Reservar</a>
+        <a href="#contacto" class="nav-link">Contacto</a>
+        <a href="#pagos" class="nav-btn nav-btn-red">Reportar Pago</a>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-stripes"></div>
+    <div class="hero-ornament"></div>
+
+    <div class="hero-badge">Est. 2006 · Excelencia en cada corte</div>
+    <p class="hero-eyebrow">Bienvenido a</p>
+    <h2 class="hero-title">The</h2>
+    <h1 class="hero-title-main">ABEL<span class="red">A</span>RDO</h1>
+    <p class="hero-title-sub">Barber Shop</p>
+
+    <div class="hero-divider">
+        <div class="hero-divider-line"></div>
+        <span class="hero-est">2006</span>
+        <div class="hero-divider-line"></div>
+    </div>
+
+    <p class="hero-sub">Más de 18 años dando el mejor look. Cortes clásicos, modernos y arreglo de barba con la experiencia que nos distingue.</p>
+
+    <div class="hero-cta">
+        <a href="#reservas" class="cta-primary">Reservar Cita</a>
+        <a href="#servicios" class="cta-secondary">Ver Servicios</a>
+    </div>
+
+    <div class="scroll-hint">
+        <div class="scroll-line"></div>
+        Explorar
+    </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-band">
+    <div class="stat-item">
+        <span class="stat-num"><span class="counter" data-target="18">0</span><span class="stat-suffix">+</span></span>
+        <p class="stat-desc">Años de experiencia</p>
+    </div>
+    <div class="stat-item">
+        <span class="stat-num"><span class="counter" data-target="5">0</span></span>
+        <p class="stat-desc">Barberos profesionales</p>
+    </div>
+    <div class="stat-item">
+        <span class="stat-num"><span class="counter" data-target="0">0</span><span class="stat-suffix">$</span></span>
+        <p class="stat-desc">Costo de reserva</p>
+    </div>
+    <div class="stat-item">
+        <span class="stat-num"><span class="counter" data-target="6">0</span></span>
+        <p class="stat-desc">Días a la semana</p>
+    </div>
+</div>
+
+<!-- SERVICIOS -->
+<section class="section" id="servicios">
+    <div class="fade-in">
+        <p class="section-label">Nuestros Servicios</p>
+        <h2 class="section-title">El corte <em>perfecto</em> te espera</h2>
+        <p class="section-subtitle">Servicios profesionales con los mejores productos y técnicas actualizadas.</p>
+
+        <div class="services-grid">
+            <div class="service-card">
+                <span class="service-icon">✂️</span>
+                <p class="service-name">Corte Clásico</p>
+                <p class="service-desc">Tijera o máquina, el estilo atemporal que nunca falla.</p>
+                <p class="service-price">Desde <span id="precio-corte">$12</span><small> CAD</small></p>
+            </div>
+            <div class="service-card">
+                <span class="service-icon">🪒</span>
+                <p class="service-name">Arreglo de Barba</p>
+                <p class="service-desc">Perfilado, recorte y afeitado con navaja. Acabado impecable.</p>
+                <p class="service-price">Desde <span id="precio-barba">$10</span><small> CAD</small></p>
+            </div>
+            <div class="service-card">
+                <span class="service-icon">💈</span>
+                <p class="service-name">Corte + Barba</p>
+                <p class="service-desc">El combo completo. Sal listo para cualquier ocasión.</p>
+                <p class="service-price">Desde <span id="precio-combo">$20</span><small> CAD</small></p>
+            </div>
+            <div class="service-card">
+                <span class="service-icon">👦</span>
+                <p class="service-name">Corte Niño</p>
+                <p class="service-desc">Para los más pequeños de la casa. Paciencia y precisión.</p>
+                <p class="service-price">Desde <span id="precio-nino">$10</span><small> CAD</small></p>
+            </div>
+            <div class="service-card">
+                <span class="service-icon">🎨</span>
+                <p class="service-name">Degradado / Fade</p>
+                <p class="service-desc">Transiciones suaves y limpias. Desde skin fade hasta high fade.</p>
+                <p class="service-price">Desde <span id="precio-fade">$15</span><small> CAD</small></p>
+            </div>
+            <div class="service-card">
+                <span class="service-icon">⚡</span>
+                <p class="service-name">Diseño / Lineup</p>
+                <p class="service-desc">Líneas precisas y diseños personalizados que te hacen destacar.</p>
+                <p class="service-price">Desde <span id="precio-design">$5</span><small> CAD</small></p>
+            </div>
+        </div>
+        <p style="text-align:center;font-size:0.78rem;color:var(--muted);margin-top:1rem;">* Precios de referencia. Confirme con su barbero al reservar.</p>
+    </div>
+</section>
+
+<!-- GALERÍA -->
+<section class="section" id="galeria" style="padding-top:0;">
+    <div class="fade-in">
+        <div class="divider-line"><span>Galería</span></div>
+        <p class="section-label">Nuestro Trabajo</p>
+        <h2 class="section-title">Resultados que <em>hablan</em></h2>
+        <p class="section-subtitle">Cada corte es una obra. Mira lo que hacemos.</p>
+
+        <div class="gallery-placeholder">
+            <div class="gallery-item"><span>📸</span><p>Corte 1</p></div>
+            <div class="gallery-item"><span>📸</span><p>Corte 2</p></div>
+            <div class="gallery-item"><span>📸</span><p>Corte 3</p></div>
+            <div class="gallery-item"><span>📸</span><p>Barba 1</p></div>
+            <div class="gallery-item"><span>📸</span><p>Fade</p></div>
+            <div class="gallery-item"><span>📸</span><p>Diseño</p></div>
+        </div>
+        <div class="gallery-note">
+            📲 Mira más trabajos en nuestro Instagram:
+            <strong><a href="https://instagram.com/theabelardobarbershop.c.a" target="_blank">@theabelardobarbershop.c.a</a></strong>
+            <br><small style="color:var(--muted2);margin-top:0.3rem;display:block;">Reemplaza estos espacios con fotos reales de la barbería</small>
+        </div>
+    </div>
+</section>
+
+<!-- RESERVAS -->
+<section class="section" id="reservas" style="padding-top:0;">
+    <div class="fade-in">
+        <div class="divider-line"><span>Citas</span></div>
+        <p class="section-label">Reservaciones</p>
+        <h2 class="section-title">Reserva tu <em>cita</em></h2>
+        <p class="section-subtitle">Elige tu barbero, servicio y horario. Confirmamos por WhatsApp.</p>
+
+        <div class="trust-banner">
+            <span class="trust-icon">✅</span>
+            <p class="trust-text"><strong>Sin costo de reserva.</strong> Solo ven a tu hora y listo. Cancelaciones con mínimo 2 horas de anticipación.</p>
+        </div>
+
+        <div class="booking-card">
+            <form id="reserva-form">
+                <p class="form-section-title">Tus datos</p>
+                <div class="form-row">
+                    <div class="field">
+                        <label>Nombre completo</label>
+                        <input type="text" name="r_nombre" placeholder="Ej. Juan García" required>
+                    </div>
+                    <div class="field">
+                        <label>Teléfono / WhatsApp</label>
+                        <input type="tel" name="r_telefono" placeholder="+1 (514) 000-0000" required>
+                    </div>
+                </div>
+
+                <p class="form-section-title">Tu cita</p>
+                <div class="form-row">
+                    <div class="field">
+                        <label>Barbero preferido</label>
+                        <select name="r_barbero" required>
+                            <option value="" disabled selected>Seleccionar barbero</option>
+                            <option value="abelardo">Abelardo (Dueño)</option>
+                            <option value="barbero2">Barbero 2</option>
+                            <option value="barbero3">Barbero 3</option>
+                            <option value="cualquiera">Cualquiera disponible</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label>Servicio</label>
+                        <select name="r_servicio" required>
+                            <option value="" disabled selected>Seleccionar servicio</option>
+                            <option value="corte">Corte Clásico</option>
+                            <option value="barba">Arreglo de Barba</option>
+                            <option value="combo">Corte + Barba</option>
+                            <option value="nino">Corte Niño</option>
+                            <option value="fade">Degradado / Fade</option>
+                            <option value="design">Diseño / Lineup</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="field">
+                        <label>Fecha deseada</label>
+                        <input type="date" name="r_fecha" required>
+                    </div>
+                    <div class="field">
+                        <label>Hora preferida</label>
+                        <select name="r_hora" required>
+                            <option value="" disabled selected>Seleccionar hora</option>
+                            <option value="9:00">9:00 AM</option>
+                            <option value="9:30">9:30 AM</option>
+                            <option value="10:00">10:00 AM</option>
+                            <option value="10:30">10:30 AM</option>
+                            <option value="11:00">11:00 AM</option>
+                            <option value="11:30">11:30 AM</option>
+                            <option value="12:00">12:00 PM</option>
+                            <option value="12:30">12:30 PM</option>
+                            <option value="13:00">1:00 PM</option>
+                            <option value="13:30">1:30 PM</option>
+                            <option value="14:00">2:00 PM</option>
+                            <option value="14:30">2:30 PM</option>
+                            <option value="15:00">3:00 PM</option>
+                            <option value="15:30">3:30 PM</option>
+                            <option value="16:00">4:00 PM</option>
+                            <option value="16:30">4:30 PM</option>
+                            <option value="17:00">5:00 PM</option>
+                            <option value="17:30">5:30 PM</option>
+                            <option value="18:00">6:00 PM</option>
+                            <option value="18:30">6:30 PM</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Notas adicionales (opcional)</label>
+                    <textarea name="r_notas" rows="2" placeholder="Ej. Quiero un skin fade con diseño..."></textarea>
+                </div>
+
+                <button type="submit" class="btn-submit" id="btn-reserva">Solicitar Cita →</button>
+                <p class="form-note" id="reserva-status">Te confirmaremos por WhatsApp a la brevedad.</p>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- PAGOS PANEL -->
+<section class="section" id="pagos" style="padding-top:0;">
+    <div class="fade-in">
+        <div class="divider-line"><span>Pagos</span></div>
+        <p class="section-label">Gestión de Pagos</p>
+        <h2 class="section-title">Panel de <em>pagos</em></h2>
+        <p class="section-subtitle">Reporta pagos de clientes e inquilinos (barberos). Toda la información queda registrada en Google Sheets.</p>
+
+        <div class="tabs-wrapper">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('tab-cliente', this)">💈 Pago de Cliente</button>
+                <button class="tab-btn" onclick="switchTab('tab-inquilino', this)">🏠 Pago de Inquilino</button>
+            </div>
+
+            <!-- TAB CLIENTE -->
+            <div id="tab-cliente" class="tab-panel active">
+                <div class="booking-card">
+                    <form id="pago-cliente-form">
+                        <p class="form-section-title">Datos del Cliente</p>
+                        <div class="form-row">
+                            <div class="field">
+                                <label>Nombre del cliente</label>
+                                <input type="text" name="pc_nombre" placeholder="Ej. Juan García" required>
+                            </div>
+                            <div class="field">
+                                <label>Teléfono (opcional)</label>
+                                <input type="tel" name="pc_tel" placeholder="+1 (514) 000-0000">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="field">
+                                <label>Barbero que atendió</label>
+                                <select name="pc_barbero" required>
+                                    <option value="" disabled selected>Seleccionar</option>
+                                    <option value="abelardo">Abelardo</option>
+                                    <option value="barbero2">Barbero 2</option>
+                                    <option value="barbero3">Barbero 3</option>
+                                    <option value="barbero4">Barbero 4</option>
+                                    <option value="barbero5">Barbero 5</option>
+                                </select>
+                            </div>
+                            <div class="field">
+                                <label>Servicio realizado</label>
+                                <select name="pc_servicio" required>
+                                    <option value="" disabled selected>Seleccionar</option>
+                                    <option value="corte">Corte Clásico</option>
+                                    <option value="barba">Arreglo de Barba</option>
+                                    <option value="combo">Corte + Barba</option>
+                                    <option value="nino">Corte Niño</option>
+                                    <option value="fade">Degradado / Fade</option>
+                                    <option value="design">Diseño / Lineup</option>
+                                    <option value="otro">Otro</option>
+                                </select>
+                            </div>
+                        </div>
+                        <p class="form-section-title">Detalle del Pago</p>
+                        <div class="form-row">
+                            <div class="field">
+                                <label>Monto cobrado (CAD)</label>
+                                <input type="number" name="pc_monto" placeholder="20.00" min="0" step="0.01" required>
+                            </div>
+                            <div class="field">
+                                <label>Método de pago</label>
+                                <select name="pc_metodo" required>
+                                    <option value="" disabled selected>Seleccionar</option>
+                                    <option value="efectivo">Efectivo</option>
+                                    <option value="debit">Débito / Crédito</option>
+                                    <option value="etransfer">E-transfer</option>
+                                    <option value="otro">Otro</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label>Notas (opcional)</label>
+                            <textarea name="pc_notas" rows="2" placeholder="Observaciones del servicio..."></textarea>
+                        </div>
+                        <p class="form-section-title">Comprobante (opcional)</p>
+                        <div class="field">
+                            <label class="file-label">
+                                <input type="file" id="file-pcliente" accept="image/*,.pdf">
+                                <span class="file-icon-lbl">📸</span>
+                                <span class="file-text"><strong>Subir comprobante</strong><br>Imagen o PDF</span>
+                            </label>
+                            <span class="file-name" id="name-pcliente"></span>
+                        </div>
+                        <button type="submit" class="btn-submit" id="btn-pcliente">Registrar Pago →</button>
+                        <p class="form-note" id="pcliente-status">El pago quedará registrado en Google Sheets automáticamente.</p>
+                    </form>
+                </div>
+            </div>
+
+            <!-- TAB INQUILINO -->
+            <div id="tab-inquilino" class="tab-panel">
+                <div class="booking-card">
+                    <form id="pago-inquilino-form">
+                        <p class="form-section-title">Datos del Inquilino</p>
+                        <div class="form-row">
+                            <div class="field">
+                                <label>Nombre del barbero / inquilino</label>
+                                <input type="text" name="pi_nombre" placeholder="Nombre completo" required>
+                            </div>
+                            <div class="field">
+                                <label>Puesto / Estación</label>
+                                <select name="pi_puesto" required>
+                                    <option value="" disabled selected>Seleccionar</option>
+                                    <option value="puesto1">Puesto 1</option>
+                                    <option value="puesto2">Puesto 2</option>
+                                    <option value="puesto3">Puesto 3</option>
+                                    <option value="puesto4">Puesto 4</option>
+                                    <option value="puesto5">Puesto 5</option>
+                                </select>
+                            </div>
+                        </div>
+                        <p class="form-section-title">Detalle del Pago</p>
+                        <div class="form-row">
+                            <div class="field">
+                                <label>Tipo de pago</label>
+                                <select name="pi_tipo" required>
+                                    <option value="" disabled selected>Seleccionar</option>
+                                    <option value="renta_semanal">Renta semanal</option>
+                                    <option value="renta_quincenal">Renta quincenal</option>
+                                    <option value="renta_mensual">Renta mensual</option>
+                                    <option value="porcentaje">Porcentaje de cortes</option>
+                                    <option value="abono">Abono / Adelanto</option>
+                                    <option value="otro">Otro</option>
+                                </select>
+                            </div>
+                            <div class="field">
+                                <label>Monto (CAD)</label>
+                                <input type="number" name="pi_monto" placeholder="200.00" min="0" step="0.01" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="field">
+                                <label>Método de pago</label>
+                                <select name="pi_metodo" required>
+                                    <option value="" disabled selected>Seleccionar</option>
+                                    <option value="efectivo">Efectivo</option>
+                                    <option value="etransfer">E-transfer</option>
+                                    <option value="debit">Débito / Crédito</option>
+                                    <option value="otro">Otro</option>
+                                </select>
+                            </div>
+                            <div class="field">
+                                <label>Período que cubre</label>
+                                <input type="text" name="pi_periodo" placeholder="Ej. 01-07 Junio 2025">
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label>Notas (opcional)</label>
+                            <textarea name="pi_notas" rows="2" placeholder="Observaciones del pago..."></textarea>
+                        </div>
+                        <p class="form-section-title">Comprobante (opcional)</p>
+                        <div class="form-row">
+                            <div class="field">
+                                <label class="file-label">
+                                    <input type="file" id="file-pinquil1" accept="image/*,.pdf">
+                                    <span class="file-icon-lbl">📸</span>
+                                    <span class="file-text"><strong>Comprobante 1</strong><br>Imagen o PDF</span>
+                                </label>
+                                <span class="file-name" id="name-pinquil1"></span>
+                            </div>
+                            <div class="field">
+                                <label class="file-label">
+                                    <input type="file" id="file-pinquil2" accept="image/*,.pdf">
+                                    <span class="file-icon-lbl">📸</span>
+                                    <span class="file-text"><strong>Comprobante 2 (opcional)</strong><br>Imagen o PDF</span>
+                                </label>
+                                <span class="file-name" id="name-pinquil2"></span>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-submit" id="btn-pinquil">Registrar Pago de Inquilino →</button>
+                        <p class="form-note" id="pinquil-status">El pago quedará registrado en Google Sheets automáticamente.</p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- UBICACIÓN / CONTACTO -->
+<section class="section" id="contacto" style="padding-top:0;">
+    <div class="fade-in">
+        <div class="divider-line"><span>Contacto</span></div>
+        <p class="section-label">Encuéntranos</p>
+        <h2 class="section-title">Ubicación y <em>horarios</em></h2>
+        <p class="section-subtitle">Estamos esperándote. Visítanos o contáctanos antes de venir.</p>
+
+        <div class="contact-grid">
+            <div class="contact-card">
+                <span class="contact-icon">📍</span>
+                <div>
+                    <p class="contact-title">Dirección</p>
+                    <p class="contact-value">Actualiza con la dirección<br>real de la barbería</p>
+                </div>
+            </div>
+            <div class="contact-card">
+                <span class="contact-icon">📞</span>
+                <div>
+                    <p class="contact-title">Teléfono / WhatsApp</p>
+                    <p class="contact-value"><a href="https://wa.me/15141234567">+1 (514) 000-0000</a><br><small style="color:var(--muted);">Actualizar número real</small></p>
+                </div>
+            </div>
+            <div class="contact-card">
+                <span class="contact-icon">📸</span>
+                <div>
+                    <p class="contact-title">Instagram</p>
+                    <p class="contact-value"><a href="https://instagram.com/theabelardobarbershop.c.a" target="_blank">@theabelardobarbershop.c.a</a></p>
+                </div>
+            </div>
+            <div class="contact-card">
+                <span class="contact-icon">✉️</span>
+                <div>
+                    <p class="contact-title">Correo</p>
+                    <p class="contact-value"><a href="mailto:info@abelardobarbershop.ca">info@abelardobarbershop.ca</a></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- HORARIO -->
+        <p class="section-label" style="margin-top:2rem;">Horario de Atención</p>
+        <div class="schedule-grid">
+            <div class="schedule-day open">
+                <p class="day-name">Lun</p>
+                <p class="day-hours">9am<br>7pm</p>
+            </div>
+            <div class="schedule-day open">
+                <p class="day-name">Mar</p>
+                <p class="day-hours">9am<br>7pm</p>
+            </div>
+            <div class="schedule-day open">
+                <p class="day-name">Mié</p>
+                <p class="day-hours">9am<br>7pm</p>
+            </div>
+            <div class="schedule-day open">
+                <p class="day-name">Jue</p>
+                <p class="day-hours">9am<br>7pm</p>
+            </div>
+            <div class="schedule-day open">
+                <p class="day-name">Vie</p>
+                <p class="day-hours">9am<br>8pm</p>
+            </div>
+            <div class="schedule-day open">
+                <p class="day-name">Sáb</p>
+                <p class="day-hours">8am<br>6pm</p>
+            </div>
+            <div class="schedule-day closed">
+                <p class="day-name">Dom</p>
+                <p class="day-hours closed-text">Cerrado</p>
+            </div>
+        </div>
+        <p style="font-size:0.75rem;color:var(--muted);text-align:center;">* Actualiza los horarios según los reales de la barbería.</p>
+
+        <div class="map-placeholder" style="margin-top:1.5rem;">
+            <span>🗺️</span>
+            <p>Mapa de Ubicación</p>
+            <a href="https://maps.google.com" target="_blank">Abrir en Google Maps</a>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <div class="footer-stripe"></div>
+    <div class="footer-logo">
+        The
+        <strong>ABEL<span>A</span>RDO</strong>
+        Barber Shop
+    </div>
+    <p class="footer-tagline">Est. 2006 · Excelencia en cada corte</p>
+    <div class="footer-links">
+        <a href="#servicios" class="footer-link">Servicios</a>
+        <a href="#galeria" class="footer-link">Galería</a>
+        <a href="#reservas" class="footer-link">Reservar</a>
+        <a href="#pagos" class="footer-link">Pagos</a>
+        <a href="#contacto" class="footer-link">Contacto</a>
+    </div>
+    <p class="footer-copy">© 2025 The Abelardo Barber Shop · theabelardobarbershop.c.a · Todos los derechos reservados</p>
+</footer>
+
+<!-- WHATSAPP FLOTANTE -->
+<a class="wa-float" href="https://wa.me/15141234567?text=Hola!%20Quiero%20reservar%20una%20cita%20en%20The%20Abelardo%20Barber%20Shop." target="_blank">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+    </svg>
+    WhatsApp
+</a>
+
+<script>
+    // ── archivoABase64 ──
+    function archivoABase64(file) {
+        return new Promise(function(resolve, reject) {
+            if (!file) return resolve(null);
+            var reader = new FileReader();
+            reader.onload  = function() { resolve(reader.result.split(',')[1]); };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    }
+
+    // ── File name display ──
+    function bindFile(inputId, displayId) {
+        var el = document.getElementById(inputId);
+        if (!el) return;
+        el.addEventListener('change', function() {
+            var d = document.getElementById(displayId);
+            if (this.files && this.files[0]) {
+                d.textContent = '✓ ' + this.files[0].name;
+                d.style.display = 'block';
+            }
+        });
+    }
+    bindFile('file-pcliente',  'name-pcliente');
+    bindFile('file-pinquil1',  'name-pinquil1');
+    bindFile('file-pinquil2',  'name-pinquil2');
+
+    // ── URLS GOOGLE APPS SCRIPT ──
+    // ⚠️ REEMPLAZA estas URLs con las de tu Google Apps Script
+    var URL_RESERVAS   = "https://script.google.com/macros/s/TU_SCRIPT_ID_AQUI/exec";
+    var URL_PAGO_CLIENTE   = "https://script.google.com/macros/s/TU_SCRIPT_ID_AQUI/exec";
+    var URL_PAGO_INQUILINO = "https://script.google.com/macros/s/TU_SCRIPT_ID_AQUI/exec";
+
+    async function enviar(url, datos) {
+        await fetch(url, { method:'POST', mode:'no-cors', body: JSON.stringify(datos) });
+    }
+
+    // ── TABS ──
+    function switchTab(tabId, btn) {
+        document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
+        document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+        document.getElementById(tabId).classList.add('active');
+        btn.classList.add('active');
+    }
+
+    // ── RESERVA ──
+    document.getElementById('reserva-form').addEventListener('submit', async function(ev) {
+        ev.preventDefault();
+        var btn = document.getElementById('btn-reserva');
+        var status = document.getElementById('reserva-status');
+        btn.disabled = true; btn.textContent = 'Enviando...';
+        status.textContent = 'Procesando tu reserva...'; status.style.color = '#aaa';
+        var f = ev.target;
+        var datos = {
+            tipo: 'reserva',
+            nombre: f.r_nombre.value,
+            telefono: f.r_telefono.value,
+            barbero: f.r_barbero.value,
+            servicio: f.r_servicio.value,
+            fecha: f.r_fecha.value,
+            hora: f.r_hora.value,
+            notas: f.r_notas.value
+        };
+        try {
+            await enviar(URL_RESERVAS, datos);
+            status.textContent = '✅ Reserva enviada. Te confirmamos por WhatsApp pronto.';
+            status.style.color = '#c9292a';
+            f.reset(); btn.textContent = 'Enviado ✓';
+        } catch(e) {
+            status.textContent = 'Error. Contáctanos por WhatsApp.'; status.style.color = '#ff5252';
+            btn.disabled = false; btn.textContent = 'Solicitar Cita →';
+        }
+    });
+
+    // ── PAGO CLIENTE ──
+    document.getElementById('pago-cliente-form').addEventListener('submit', async function(ev) {
+        ev.preventDefault();
+        var btn = document.getElementById('btn-pcliente');
+        var status = document.getElementById('pcliente-status');
+        btn.disabled = true; btn.textContent = 'Guardando...';
+        var f = ev.target;
+        var datos = {
+            tipo: 'pago_cliente',
+            nombre: f.pc_nombre.value,
+            telefono: f.pc_tel.value,
+            barbero: f.pc_barbero.value,
+            servicio: f.pc_servicio.value,
+            monto: f.pc_monto.value,
+            metodo: f.pc_metodo.value,
+            notas: f.pc_notas.value,
+            fecha_hora: new Date().toLocaleString('es-CA')
+        };
+        var fc = document.getElementById('file-pcliente').files[0];
+        if (fc) { datos.comprobante_base64 = await archivoABase64(fc); datos.comprobante_nombre = fc.name; datos.comprobante_tipo = fc.type; }
+        try {
+            await enviar(URL_PAGO_CLIENTE, datos);
+            status.textContent = '✅ Pago registrado en Google Sheets.'; status.style.color = '#c9a84c';
+            f.reset(); document.getElementById('name-pcliente').style.display='none'; btn.textContent = 'Registrado ✓';
+        } catch(e) {
+            status.textContent = 'Error al registrar. Intenta de nuevo.'; status.style.color = '#ff5252';
+            btn.disabled = false; btn.textContent = 'Registrar Pago →';
+        }
+    });
+
+    // ── PAGO INQUILINO ──
+    document.getElementById('pago-inquilino-form').addEventListener('submit', async function(ev) {
+        ev.preventDefault();
+        var btn = document.getElementById('btn-pinquil');
+        var status = document.getElementById('pinquil-status');
+        btn.disabled = true; btn.textContent = 'Guardando...';
+        var f = ev.target;
+        var datos = {
+            tipo: 'pago_inquilino',
+            nombre: f.pi_nombre.value,
+            puesto: f.pi_puesto.value,
+            tipo_pago: f.pi_tipo.value,
+            monto: f.pi_monto.value,
+            metodo: f.pi_metodo.value,
+            periodo: f.pi_periodo.value,
+            notas: f.pi_notas.value,
+            fecha_hora: new Date().toLocaleString('es-CA')
+        };
+        var f1 = document.getElementById('file-pinquil1').files[0];
+        var f2 = document.getElementById('file-pinquil2').files[0];
+        if (f1) { datos.comprobante1_base64 = await archivoABase64(f1); datos.comprobante1_nombre = f1.name; }
+        if (f2) { datos.comprobante2_base64 = await archivoABase64(f2); datos.comprobante2_nombre = f2.name; }
+        try {
+            await enviar(URL_PAGO_INQUILINO, datos);
+            status.textContent = '✅ Pago de inquilino registrado en Google Sheets.'; status.style.color = '#c9a84c';
+            f.reset();
+            document.getElementById('name-pinquil1').style.display='none';
+            document.getElementById('name-pinquil2').style.display='none';
+            btn.textContent = 'Registrado ✓';
+        } catch(e) {
+            status.textContent = 'Error al registrar. Intenta de nuevo.'; status.style.color = '#ff5252';
+            btn.disabled = false; btn.textContent = 'Registrar Pago de Inquilino →';
+        }
+    });
+
+    // ── NAV ──
+    var nav = document.getElementById('main-nav');
+    window.addEventListener('scroll', function() {
+        nav.classList.toggle('visible', window.scrollY > window.innerHeight * 0.7);
+    }, { passive:true });
+
+    // ── FADE IN ──
+    var io = new IntersectionObserver(function(entries) {
+        entries.forEach(function(e){ if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold:0.07 });
+    document.querySelectorAll('.fade-in').forEach(function(el){ io.observe(el); });
+
+    // ── CONTADOR ──
+    var counted = false;
+    var statsEl = document.querySelector('.stats-band');
+    var statsObs = new IntersectionObserver(function(entries) {
+        if (entries[0].isIntersecting && !counted) {
+            counted = true;
+            document.querySelectorAll('.counter').forEach(function(c) {
+                var target = parseInt(c.getAttribute('data-target'), 10);
+                if (target === 0) return;
+                var duration = 1200, step = Math.max(1, Math.ceil(target / (duration / 16)));
+                var current = 0;
+                var timer = setInterval(function() {
+                    current += step;
+                    if (current >= target) { current = target; clearInterval(timer); }
+                    c.textContent = current;
+                }, 16);
+            });
+        }
+    }, { threshold:0.5 });
+    if (statsEl) statsObs.observe(statsEl);
+
+    // ── SCROLL SUAVE ──
+    document.querySelectorAll('a[href^="#"]').forEach(function(a) {
+        a.addEventListener('click', function(e) {
+            var t = document.querySelector(this.getAttribute('href'));
+            if (t) { e.preventDefault(); t.scrollIntoView({ behavior:'smooth' }); }
+        });
+    });
+
+    // ── Fecha mínima en reservas ──
+    var today = new Date().toISOString().split('T')[0];
+    var dateInput = document.querySelector('input[name="r_fecha"]');
+    if (dateInput) dateInput.setAttribute('min', today);
+</script>
+</body>
+</html>
