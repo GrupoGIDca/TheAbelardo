@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0c0b09">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Abelardo Admin">
+<title>Admin · The Abelardo Barber Shop</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black:   #0c0b09;
+  --dark:    #131210;
+  --card:    #1a1815;
+  --card2:   #201e1a;
+  --border:  #2e2a24;
+  --red:     #c9292a;
+  --red-d:   #a31f20;
+  --red-g:   rgba(201,41,42,0.12);
+  --blue:    #1a4fa8;
+  --cream:   #f0ece3;
+  --cream2:  #b0a898;
+  --gold:    #c9a84c;
+  --green:   #2ecc71;
+  --orange:  #e67e22;
+  --muted:   #7a7060;
+  --safe:    env(safe-area-inset-bottom, 0px);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;background:var(--black);color:var(--cream);font-family:'Barlow',sans-serif;overflow:hidden;}
+
+/* ── SCREENS ── */
+.screen{position:fixed;inset:0;display:flex;flex-direction:column;transition:opacity .3s,transform .3s;}
+.screen.hidden{opacity:0;pointer-events:none;transform:translateY(20px);}
+
+/* ── PIN SCREEN ── */
+#pin-screen{align-items:center;justify-content:center;gap:2rem;padding:2rem;}
+.pin-logo{font-family:'Barlow Condensed',sans-serif;font-size:1.4rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;text-align:center;}
+.pin-logo span{color:var(--red);}
+.pin-logo small{display:block;font-size:.65rem;font-weight:400;letter-spacing:.35em;color:var(--muted);margin-top:.3rem;}
+.pin-dots{display:flex;gap:1rem;justify-content:center;}
+.pin-dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--border);background:transparent;transition:all .2s;}
+.pin-dot.filled{background:var(--red);border-color:var(--red);}
+.pin-dot.error{background:#ff4444;border-color:#ff4444;animation:shake .3s ease;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.pin-hint{font-size:.75rem;color:var(--muted);letter-spacing:.1em;}
+.pin-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;width:100%;max-width:280px;}
+.pin-btn{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.1rem;
+  font-family:'Barlow Condensed',sans-serif;font-size:1.6rem;font-weight:700;color:var(--cream);
+  cursor:pointer;transition:all .15s;user-select:none;-webkit-user-select:none;}
+.pin-btn:active{background:var(--card2);transform:scale(.94);}
+.pin-btn.del{font-size:1.2rem;color:var(--muted);}
+.pin-btn.zero{grid-column:2;}
+
+/* ── APP SHELL ── */
+#app-screen{flex-direction:column;}
+.topbar{
+  background:var(--dark);border-bottom:1px solid var(--border);
+  padding:.8rem 1.2rem;display:flex;align-items:center;justify-content:space-between;
+  padding-top:calc(.8rem + env(safe-area-inset-top,0px));flex-shrink:0;
+}
+.topbar-title{font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:800;
+  text-transform:uppercase;letter-spacing:.08em;}
+.topbar-title span{color:var(--red);}
+.topbar-actions{display:flex;gap:.6rem;align-items:center;}
+.icon-btn{background:transparent;border:none;color:var(--muted);font-size:1.2rem;cursor:pointer;
+  padding:.4rem;border-radius:6px;transition:color .2s;}
+.icon-btn:active{color:var(--cream);}
+
+/* ── CONTENT AREA ── */
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:1rem 1rem calc(80px + var(--safe)) 1rem;}
+
+/* ── BOTTOM NAV ── */
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;
+  background:var(--dark);border-top:1px solid var(--border);
+  display:flex;padding-bottom:var(--safe);flex-shrink:0;
+}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:.7rem .5rem;gap:.3rem;cursor:pointer;transition:color .2s;color:var(--muted);border:none;background:transparent;}
+.nav-item.active{color:var(--red);}
+.nav-item svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.nav-item span{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;}
+
+/* ── TABS ── */
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+
+/* ── CARDS ── */
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.2rem;margin-bottom:.8rem;}
+.card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.8rem;}
+.section-label{font-family:'Barlow Condensed',sans-serif;font-size:.62rem;font-weight:700;
+  letter-spacing:.3em;text-transform:uppercase;color:var(--red);margin-bottom:.5rem;}
+.section-title{font-family:'Barlow Condensed',sans-serif;font-size:1.4rem;font-weight:800;
+  text-transform:uppercase;letter-spacing:.04em;color:var(--cream);margin-bottom:1rem;}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;gap:.3rem;padding:.25rem .7rem;border-radius:20px;
+  font-family:'Barlow Condensed',sans-serif;font-size:.65rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.08em;}
+.badge-pending{background:rgba(230,126,34,.15);color:var(--orange);border:1px solid rgba(230,126,34,.3);}
+.badge-accepted{background:rgba(46,204,113,.15);color:var(--green);border:1px solid rgba(46,204,113,.3);}
+.badge-postponed{background:rgba(26,79,168,.2);color:#6b9de8;border:1px solid rgba(26,79,168,.4);}
+.badge-cancelled{background:rgba(201,41,42,.15);color:#ff6b6b;border:1px solid rgba(201,41,42,.3);}
+
+/* ── CITA CARD ── */
+.cita-card{background:var(--card);border:1px solid var(--border);border-radius:12px;
+  padding:1.1rem;margin-bottom:.7rem;border-left:3px solid var(--border);}
+.cita-card.pending{border-left-color:var(--orange);}
+.cita-card.accepted{border-left-color:var(--green);}
+.cita-card.postponed{border-left-color:var(--blue);}
+.cita-card.cancelled{border-left-color:var(--red);}
+.cita-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.6rem;}
+.cita-name{font-family:'Barlow Condensed',sans-serif;font-size:1.05rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.05em;color:var(--cream);}
+.cita-info{font-size:.8rem;color:var(--muted);line-height:1.6;margin-bottom:.8rem;}
+.cita-info strong{color:var(--cream2);font-weight:500;}
+.cita-actions{display:flex;gap:.5rem;flex-wrap:wrap;}
+.action-btn{padding:.45rem 1rem;border-radius:6px;border:none;cursor:pointer;
+  font-family:'Barlow Condensed',sans-serif;font-size:.72rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;transition:all .15s;}
+.action-btn:active{transform:scale(.95);}
+.btn-accept{background:var(--green);color:#0d0d0d;}
+.btn-postpone{background:var(--blue);color:#fff;}
+.btn-cancel{background:transparent;color:var(--muted);border:1px solid var(--border);}
+.btn-whatsapp{background:#25D366;color:#fff;}
+
+/* ── STATS GRID ── */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:1rem;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1rem;}
+.stat-card.full{grid-column:1/-1;}
+.stat-val{font-family:'Barlow Condensed',sans-serif;font-size:2rem;font-weight:800;
+  color:var(--red);line-height:1;margin-bottom:.2rem;}
+.stat-val.green{color:var(--green);}
+.stat-val.gold{color:var(--gold);}
+.stat-val.blue{color:#6b9de8;}
+.stat-lbl{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.15em;color:var(--muted);}
+
+/* ── CHART ── */
+.chart-wrap{background:var(--card);border:1px solid var(--border);border-radius:12px;
+  padding:1rem;margin-bottom:.8rem;}
+.chart-title{font-family:'Barlow Condensed',sans-serif;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.2em;color:var(--muted);margin-bottom:.8rem;}
+.bar-chart{display:flex;align-items:flex-end;gap:.4rem;height:100px;}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:.3rem;}
+.bar{width:100%;background:var(--red);border-radius:3px 3px 0 0;min-height:4px;transition:height .6s ease;}
+.bar.blue{background:var(--blue);}
+.bar.gold{background:var(--gold);}
+.bar-lbl{font-family:'Barlow Condensed',sans-serif;font-size:.55rem;color:var(--muted);
+  text-align:center;letter-spacing:.05em;}
+
+/* ── PAGO ROW ── */
+.pago-row{display:flex;justify-content:space-between;align-items:center;
+  padding:.85rem 0;border-bottom:1px solid var(--border);}
+.pago-row:last-child{border-bottom:none;}
+.pago-info p{font-size:.85rem;color:var(--cream);font-weight:500;}
+.pago-info small{font-size:.72rem;color:var(--muted);}
+.pago-monto{font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:800;color:var(--gold);}
+
+/* ── FILTER PILLS ── */
+.filter-row{display:flex;gap:.5rem;overflow-x:auto;padding-bottom:.5rem;margin-bottom:1rem;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.filter-row::-webkit-scrollbar{display:none;}
+.pill{padding:.35rem .9rem;border-radius:20px;border:1px solid var(--border);
+  font-family:'Barlow Condensed',sans-serif;font-size:.68rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
+  background:transparent;cursor:pointer;white-space:nowrap;transition:all .2s;flex-shrink:0;}
+.pill.active{background:var(--red);border-color:var(--red);color:var(--cream);}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;
+  display:flex;align-items:flex-end;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .25s;}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+.modal{background:var(--dark);border:1px solid var(--border);border-radius:20px 20px 0 0;
+  padding:1.5rem;padding-bottom:calc(1.5rem + var(--safe));width:100%;max-width:500px;
+  transform:translateY(100%);transition:transform .3s ease;}
+.modal-overlay.open .modal{transform:translateY(0);}
+.modal-title{font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:800;
+  text-transform:uppercase;letter-spacing:.08em;margin-bottom:1.2rem;}
+.modal-field{margin-bottom:1rem;}
+.modal-field label{font-family:'Barlow Condensed',sans-serif;font-size:.62rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.15em;color:var(--muted);display:block;margin-bottom:.4rem;}
+.modal-field input,.modal-field select,.modal-field textarea{
+  width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;
+  padding:.8rem 1rem;font-family:'Barlow',sans-serif;font-size:.9rem;color:var(--cream);
+  outline:none;-webkit-appearance:none;}
+.modal-field input:focus,.modal-field select:focus{border-color:var(--red);}
+.modal-row{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;}
+.modal-actions{display:flex;gap:.7rem;margin-top:1.2rem;}
+.modal-btn{flex:1;padding:.9rem;border-radius:8px;border:none;cursor:pointer;
+  font-family:'Barlow Condensed',sans-serif;font-size:.85rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;transition:all .2s;}
+.modal-btn.confirm{background:var(--red);color:var(--cream);}
+.modal-btn.cancel{background:var(--card);color:var(--muted);border:1px solid var(--border);}
+
+/* ── EMPTY STATE ── */
+.empty{text-align:center;padding:3rem 1rem;color:var(--muted);}
+.empty-icon{font-size:2.5rem;margin-bottom:.8rem;}
+.empty p{font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:.15em;text-transform:uppercase;}
+
+/* ── TOAST ── */
+.toast{position:fixed;top:calc(60px + env(safe-area-inset-top,0px));left:1rem;right:1rem;
+  background:var(--card);border:1px solid var(--border);border-radius:10px;
+  padding:.9rem 1.2rem;font-size:.85rem;z-index:200;
+  transform:translateY(-20px);opacity:0;transition:all .3s;pointer-events:none;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.success{border-color:var(--green);color:var(--green);}
+.toast.error{border-color:var(--red);color:#ff6b6b;}
+
+/* ── REFRESH BTN ── */
+.refresh-row{display:flex;justify-content:flex-end;margin-bottom:.8rem;}
+.refresh-btn{background:transparent;border:1px solid var(--border);border-radius:8px;
+  padding:.4rem .8rem;color:var(--muted);font-family:'Barlow Condensed',sans-serif;
+  font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;cursor:pointer;}
+.refresh-btn:active{background:var(--card);}
+
+/* ── LOADING ── */
+.loading{text-align:center;padding:2rem;color:var(--muted);
+  font-family:'Barlow Condensed',sans-serif;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{display:inline-block;width:20px;height:20px;border:2px solid var(--border);
+  border-top-color:var(--red);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:.5rem;}
+</style>
+</head>
+<body>
+
+<!-- ═══ PIN SCREEN ═══ -->
+<div class="screen" id="pin-screen">
+  <div class="pin-logo">
+    ABELARDO<span>.</span><br>
+    <small>Panel de Administración</small>
+  </div>
+  <div class="pin-dots">
+    <div class="pin-dot" id="d0"></div>
+    <div class="pin-dot" id="d1"></div>
+    <div class="pin-dot" id="d2"></div>
+    <div class="pin-dot" id="d3"></div>
+  </div>
+  <p class="pin-hint">Ingresa tu PIN</p>
+  <div class="pin-grid">
+    <button class="pin-btn" onclick="pinPress('1')">1</button>
+    <button class="pin-btn" onclick="pinPress('2')">2</button>
+    <button class="pin-btn" onclick="pinPress('3')">3</button>
+    <button class="pin-btn" onclick="pinPress('4')">4</button>
+    <button class="pin-btn" onclick="pinPress('5')">5</button>
+    <button class="pin-btn" onclick="pinPress('6')">6</button>
+    <button class="pin-btn" onclick="pinPress('7')">7</button>
+    <button class="pin-btn" onclick="pinPress('8')">8</button>
+    <button class="pin-btn" onclick="pinPress('9')">9</button>
+    <button class="pin-btn zero" onclick="pinPress('0')">0</button>
+    <button class="pin-btn del" onclick="pinDel()">⌫</button>
+  </div>
+</div>
+
+<!-- ═══ APP SCREEN ═══ -->
+<div class="screen hidden" id="app-screen">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="topbar-title">ABEL<span>A</span>RDO <span style="color:var(--muted);font-weight:400;font-size:.8rem;">Admin</span></div>
+    <div class="topbar-actions">
+      <button class="icon-btn" onclick="recargarTodo()" title="Actualizar">
+        <svg viewBox="0 0 24 24" style="width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+      </button>
+      <button class="icon-btn" onclick="cerrarSesion()" title="Salir">
+        <svg viewBox="0 0 24 24" style="width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- ── TAB: CITAS ── -->
+    <div class="tab-content active" id="tab-citas">
+      <div class="section-label">Gestión</div>
+      <div class="section-title">Citas</div>
+      <div class="filter-row">
+        <button class="pill active" onclick="filtrarCitas('todas',this)">Todas</button>
+        <button class="pill" onclick="filtrarCitas('Pendiente',this)">Pendientes</button>
+        <button class="pill" onclick="filtrarCitas('Aceptada',this)">Aceptadas</button>
+        <button class="pill" onclick="filtrarCitas('Pospuesta',this)">Pospuestas</button>
+        <button class="pill" onclick="filtrarCitas('Cancelada',this)">Canceladas</button>
+      </div>
+      <div class="refresh-row">
+        <button class="refresh-btn" onclick="cargarCitas()">↻ Actualizar</button>
+      </div>
+      <div id="citas-list"><div class="loading"><div class="spinner"></div><br>Cargando citas...</div></div>
+    </div>
+
+    <!-- ── TAB: INGRESOS ── -->
+    <div class="tab-content" id="tab-ingresos">
+      <div class="section-label">Finanzas</div>
+      <div class="section-title">Ingresos</div>
+
+      <div class="filter-row">
+        <button class="pill active" onclick="filtrarPeriodo('hoy',this)">Hoy</button>
+        <button class="pill" onclick="filtrarPeriodo('semana',this)">Esta semana</button>
+        <button class="pill" onclick="filtrarPeriodo('mes',this)">Este mes</button>
+      </div>
+
+      <div class="stats-grid" id="stats-cards">
+        <div class="stat-card">
+          <div class="stat-val green" id="stat-total">$0</div>
+          <div class="stat-lbl">Total del período</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="stat-clientes">0</div>
+          <div class="stat-lbl">Pagos clientes</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val gold" id="stat-inquilinos-monto">$0</div>
+          <div class="stat-lbl">Rentas cobradas</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val blue" id="stat-citas-hoy">0</div>
+          <div class="stat-lbl">Citas hoy</div>
+        </div>
+      </div>
+
+      <!-- Gráfica por barbero -->
+      <div class="chart-wrap">
+        <div class="chart-title">Ingresos por barbero (mes actual)</div>
+        <div class="bar-chart" id="bar-chart">
+          <div class="loading" style="width:100%"><div class="spinner"></div></div>
+        </div>
+      </div>
+
+      <!-- Últimos pagos clientes -->
+      <div class="card">
+        <div class="chart-title">Últimos pagos de clientes</div>
+        <div id="pagos-clientes-list"><div class="loading"><div class="spinner"></div></div></div>
+      </div>
+    </div>
+
+    <!-- ── TAB: INQUILINOS ── -->
+    <div class="tab-content" id="tab-inquilinos">
+      <div class="section-label">Rentas</div>
+      <div class="section-title">Inquilinos</div>
+
+      <div class="filter-row">
+        <button class="pill active" onclick="filtrarInquilino('todos',this)">Todos</button>
+        <button class="pill" onclick="filtrarInquilino('Puesto 1',this)">Puesto 1</button>
+        <button class="pill" onclick="filtrarInquilino('Puesto 2',this)">Puesto 2</button>
+        <button class="pill" onclick="filtrarInquilino('Puesto 3',this)">Puesto 3</button>
+        <button class="pill" onclick="filtrarInquilino('Puesto 4',this)">Puesto 4</button>
+        <button class="pill" onclick="filtrarInquilino('Puesto 5',this)">Puesto 5</button>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-val gold" id="stat-renta-mes">$0</div>
+          <div class="stat-lbl">Rentas este mes</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="stat-pagos-inq">0</div>
+          <div class="stat-lbl">Pagos registrados</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="chart-title">Historial de pagos</div>
+        <div id="inquilinos-list"><div class="loading"><div class="spinner"></div></div></div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" onclick="switchTab('citas',this)">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <span>Citas</span>
+    </button>
+    <button class="nav-item" onclick="switchTab('ingresos',this)">
+      <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      <span>Ingresos</span>
+    </button>
+    <button class="nav-item" onclick="switchTab('inquilinos',this)">
+      <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      <span>Inquilinos</span>
+    </button>
+  </nav>
+
+</div><!-- /app-screen -->
+
+<!-- ═══ MODAL POSPONER ═══ -->
+<div class="modal-overlay" id="modal-postpone">
+  <div class="modal">
+    <div class="modal-title">📅 Posponer Cita</div>
+    <input type="hidden" id="postpone-row">
+    <div class="modal-row">
+      <div class="modal-field">
+        <label>Nueva fecha</label>
+        <input type="date" id="postpone-fecha">
+      </div>
+      <div class="modal-field">
+        <label>Nueva hora</label>
+        <select id="postpone-hora">
+          <option value="9:00">9:00 AM</option><option value="9:30">9:30 AM</option>
+          <option value="10:00">10:00 AM</option><option value="10:30">10:30 AM</option>
+          <option value="11:00">11:00 AM</option><option value="11:30">11:30 AM</option>
+          <option value="12:00">12:00 PM</option><option value="12:30">12:30 PM</option>
+          <option value="13:00">1:00 PM</option><option value="13:30">1:30 PM</option>
+          <option value="14:00">2:00 PM</option><option value="14:30">2:30 PM</option>
+          <option value="15:00">3:00 PM</option><option value="15:30">3:30 PM</option>
+          <option value="16:00">4:00 PM</option><option value="16:30">4:30 PM</option>
+          <option value="17:00">5:00 PM</option><option value="17:30">5:30 PM</option>
+          <option value="18:00">6:00 PM</option><option value="18:30">6:30 PM</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-field">
+      <label>Nota para el cliente (opcional)</label>
+      <textarea id="postpone-nota" rows="2" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:.8rem;width:100%;color:var(--cream);font-family:Barlow,sans-serif;font-size:.9rem;outline:none;resize:none;" placeholder="Ej: Lo sentimos, hubo un imprevisto..."></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn cancel" onclick="cerrarModal()">Cancelar</button>
+      <button class="modal-btn confirm" onclick="confirmarPosponer()">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TOAST ═══ -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ──────────────────────────────────────────────────────────────────
+//  CONFIG — REEMPLAZA ESTA URL CON LA DE TU APPS SCRIPT
+// ──────────────────────────────────────────────────────────────────
+var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxk3Jsq56jthr1mEHT7G6_GfXuQpwb9ADcCRJHL4sf6KJ30-ADPOifA805V2vglm-ap/exec";
+var PIN_CORRECTO = "2006"; // ⚠️ CAMBIA ESTE PIN ANTES DE PUBLICAR
+
+// ──────────────────────────────────────────────────────────────────
+//  ESTADO GLOBAL
+// ──────────────────────────────────────────────────────────────────
+var STATE = {
+  citas: [],
+  pagosClientes: [],
+  pagosInquilinos: [],
+  filtroCitas: 'todas',
+  filtroPeriodo: 'hoy',
+  filtroInquilino: 'todos',
+  citaPendienteAccion: null
+};
+
+// ──────────────────────────────────────────────────────────────────
+//  PIN
+// ──────────────────────────────────────────────────────────────────
+var pinActual = '';
+
+function pinPress(n) {
+  if (pinActual.length >= 4) return;
+  pinActual += n;
+  actualizarDots();
+  if (pinActual.length === 4) verificarPin();
+}
+
+function pinDel() {
+  pinActual = pinActual.slice(0,-1);
+  actualizarDots();
+}
+
+function actualizarDots() {
+  for (var i=0;i<4;i++) {
+    var d = document.getElementById('d'+i);
+    d.classList.toggle('filled', i < pinActual.length);
+    d.classList.remove('error');
+  }
+}
+
+function verificarPin() {
+  if (pinActual === PIN_CORRECTO) {
+    document.getElementById('pin-screen').classList.add('hidden');
+    document.getElementById('app-screen').classList.remove('hidden');
+    recargarTodo();
+  } else {
+    for (var i=0;i<4;i++) document.getElementById('d'+i).classList.add('error');
+    setTimeout(function(){ pinActual=''; actualizarDots(); }, 700);
+  }
+}
+
+function cerrarSesion() {
+  pinActual = '';
+  actualizarDots();
+  document.getElementById('app-screen').classList.add('hidden');
+  document.getElementById('pin-screen').classList.remove('hidden');
+}
+
+// ──────────────────────────────────────────────────────────────────
+//  NAVEGACIÓN
+// ──────────────────────────────────────────────────────────────────
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab-content').forEach(function(t){ t.classList.remove('active'); });
+  document.querySelectorAll('.nav-item').forEach(function(b){ b.classList.remove('active'); });
+  document.getElementById('tab-'+tab).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ──────────────────────────────────────────────────────────────────
+//  CARGA DE DATOS
+// ──────────────────────────────────────────────────────────────────
+function recargarTodo() {
+  cargarCitas();
+  cargarPagosClientes();
+  cargarPagosInquilinos();
+}
+
+function apiGet(accion, params) {
+  var url = SCRIPT_URL + '?accion=' + accion;
+  if (params) {
+    Object.keys(params).forEach(function(k){ url += '&' + k + '=' + encodeURIComponent(params[k]); });
+  }
+  return fetch(url).then(function(r){ return r.json(); });
+}
+
+function apiPost(datos) {
+  return fetch(SCRIPT_URL, {
+    method: 'POST',
+    body: JSON.stringify(datos)
+  }).then(function(r){ return r.json(); });
+}
+
+function cargarCitas() {
+  document.getElementById('citas-list').innerHTML = '<div class="loading"><div class="spinner"></div><br>Cargando...</div>';
+  apiGet('citas').then(function(data) {
+    STATE.citas = data.filas || [];
+    renderCitas();
+  }).catch(function(){
+    document.getElementById('citas-list').innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div><p>Error al cargar. Verifica la URL del script.</p></div>';
+  });
+}
+
+function cargarPagosClientes() {
+  apiGet('pagos_clientes').then(function(data) {
+    STATE.pagosClientes = data.filas || [];
+    renderIngresos();
+  }).catch(function(){});
+}
+
+function cargarPagosInquilinos() {
+  apiGet('pagos_inquilinos').then(function(data) {
+    STATE.pagosInquilinos = data.filas || [];
+    renderInquilinos();
+  }).catch(function(){});
+}
+
+// ──────────────────────────────────────────────────────────────────
+//  RENDER CITAS
+// ──────────────────────────────────────────────────────────────────
+var ESTADO_CLASS = { 'Pendiente':'pending','Aceptada':'accepted','Pospuesta':'postponed','Cancelada':'cancelled' };
+var ESTADO_BADGE = { 'Pendiente':'badge-pending','Aceptada':'badge-accepted','Pospuesta':'badge-postponed','Cancelada':'badge-cancelled' };
+
+function filtrarCitas(f, btn) {
+  STATE.filtroCitas = f;
+  document.querySelectorAll('#tab-citas .pill').forEach(function(p){ p.classList.remove('active'); });
+  btn.classList.add('active');
+  renderCitas();
+}
+
+function renderCitas() {
+  var lista = STATE.citas;
+  if (STATE.filtroCitas !== 'todas') lista = lista.filter(function(c){ return c[8] === STATE.filtroCitas; });
+
+  // Ordenar: pendientes primero
+  lista = lista.slice().sort(function(a,b){
+    var ord = {'Pendiente':0,'Aceptada':1,'Pospuesta':2,'Cancelada':3};
+    return (ord[a[8]]||9) - (ord[b[8]]||9);
+  });
+
+  if (!lista.length) {
+    document.getElementById('citas-list').innerHTML = '<div class="empty"><div class="empty-icon">📅</div><p>Sin citas en esta categoría</p></div>';
+    return;
+  }
+
+  var html = '';
+  lista.forEach(function(c, idx) {
+    // c: [0]FechaReg [1]Cliente [2]Tel [3]Barbero [4]Servicio [5]Fecha [6]Hora [7]Notas [8]Estado [9]rowIndex
+    var estado = c[8] || 'Pendiente';
+    var cls = ESTADO_CLASS[estado] || '';
+    var badge = ESTADO_BADGE[estado] || '';
+    var ri = c[9]; // row index real en sheets
+    html += '<div class="cita-card ' + cls + '">';
+    html += '<div class="cita-top"><span class="cita-name">' + (c[1]||'') + '</span><span class="badge ' + badge + '">' + estado + '</span></div>';
+    html += '<div class="cita-info">';
+    html += '📅 <strong>' + (c[5]||'') + '</strong> · ⏰ <strong>' + (c[6]||'') + '</strong><br>';
+    html += '✂️ <strong>' + (c[4]||'') + '</strong> · 👤 ' + (c[3]||'') + '<br>';
+    if (c[2]) html += '📞 ' + c[2] + '<br>';
+    if (c[7]) html += '📝 ' + c[7];
+    html += '</div>';
+    html += '<div class="cita-actions">';
+    if (estado === 'Pendiente') {
+      html += '<button class="action-btn btn-accept" onclick="accionCita(' + ri + ',\'Aceptada\',\'' + esc(c[1]) + '\',\'' + esc(c[2]) + '\',\'' + esc(c[4]) + '\',\'' + esc(c[5]) + '\',\'' + esc(c[6]) + '\')">✓ Aceptar</button>';
+      html += '<button class="action-btn btn-postpone" onclick="abrirPosponer(' + ri + ',\'' + esc(c[2]) + '\',\'' + esc(c[1]) + '\')">📅 Posponer</button>';
+      html += '<button class="action-btn btn-cancel" onclick="accionCita(' + ri + ',\'Cancelada\',\'' + esc(c[1]) + '\',\'' + esc(c[2]) + '\',\'' + esc(c[4]) + '\',\'' + esc(c[5]) + '\',\'' + esc(c[6]) + '\')">✕ Cancelar</button>';
+    }
+    if (c[2]) {
+      html += '<button class="action-btn btn-whatsapp" onclick="abrirWhatsApp(\'' + esc(c[2]) + '\',\'' + esc(c[1]) + '\')">WhatsApp</button>';
+    }
+    html += '</div></div>';
+  });
+  document.getElementById('citas-list').innerHTML = html;
+}
+
+function esc(s) { return (s||'').replace(/'/g,"\\'"); }
+
+// ──────────────────────────────────────────────────────────────────
+//  ACCIONES CITAS
+// ──────────────────────────────────────────────────────────────────
+function accionCita(rowIndex, nuevoEstado, nombre, tel, servicio, fecha, hora) {
+  apiPost({
+    tipo: 'actualizar_cita',
+    rowIndex: rowIndex,
+    estado: nuevoEstado,
+    nombre: nombre,
+    telefono: tel,
+    servicio: servicio,
+    fecha: fecha,
+    hora: hora
+  }).then(function(r) {
+    if (r.status === 'ok') {
+      // Actualizar en estado local
+      var c = STATE.citas.find(function(x){ return x[9] == rowIndex; });
+      if (c) c[8] = nuevoEstado;
+      renderCitas();
+      showToast(nuevoEstado === 'Aceptada' ? '✅ Cita aceptada · WhatsApp enviado' : '❌ Cita cancelada', nuevoEstado === 'Aceptada' ? 'success' : 'error');
+    }
+  }).catch(function(){ showToast('Error al actualizar','error'); });
+}
+
+function abrirPosponer(rowIndex, tel, nombre) {
+  STATE.citaPendienteAccion = { rowIndex: rowIndex, tel: tel, nombre: nombre };
+  var hoy = new Date().toISOString().split('T')[0];
+  document.getElementById('postpone-fecha').value = hoy;
+  document.getElementById('postpone-row').value = rowIndex;
+  document.getElementById('postpone-nota').value = '';
+  document.getElementById('modal-postpone').classList.add('open');
+}
+
+function cerrarModal() {
+  document.getElementById('modal-postpone').classList.remove('open');
+}
+
+function confirmarPosponer() {
+  var rowIndex = document.getElementById('postpone-row').value;
+  var fecha = document.getElementById('postpone-fecha').value;
+  var hora  = document.getElementById('postpone-hora').value;
+  var nota  = document.getElementById('postpone-nota').value;
+  var info  = STATE.citaPendienteAccion || {};
+
+  if (!fecha) { showToast('Selecciona una fecha','error'); return; }
+
+  apiPost({
+    tipo: 'actualizar_cita',
+    rowIndex: rowIndex,
+    estado: 'Pospuesta',
+    nuevaFecha: fecha,
+    nuevaHora: hora,
+    nota: nota,
+    nombre: info.nombre,
+    telefono: info.tel
+  }).then(function(r) {
+    if (r.status === 'ok') {
+      var c = STATE.citas.find(function(x){ return x[9] == rowIndex; });
+      if (c) { c[8] = 'Pospuesta'; c[5] = fecha; c[6] = hora; }
+      renderCitas();
+      cerrarModal();
+      showToast('📅 Cita pospuesta · WhatsApp enviado','success');
+    }
+  }).catch(function(){ showToast('Error al posponer','error'); });
+}
+
+// ──────────────────────────────────────────────────────────────────
+//  RENDER INGRESOS
+// ──────────────────────────────────────────────────────────────────
+function filtrarPeriodo(p, btn) {
+  STATE.filtroPeriodo = p;
+  document.querySelectorAll('#tab-ingresos .pill').forEach(function(x){ x.classList.remove('active'); });
+  btn.classList.add('active');
+  renderIngresos();
+}
+
+function renderIngresos() {
+  var hoy = new Date();
+  var pagos = STATE.pagosClientes;
+  var inqs  = STATE.pagosInquilinos;
+
+  function enPeriodo(fechaStr) {
+    if (!fechaStr) return false;
+    var f = new Date(fechaStr);
+    if (STATE.filtroPeriodo === 'hoy') {
+      return f.toDateString() === hoy.toDateString();
+    } else if (STATE.filtroPeriodo === 'semana') {
+      var inicioSemana = new Date(hoy); inicioSemana.setDate(hoy.getDate() - hoy.getDay());
+      return f >= inicioSemana;
+    } else {
+      return f.getMonth() === hoy.getMonth() && f.getFullYear() === hoy.getFullYear();
+    }
+  }
+
+  var pagosFilt = pagos.filter(function(p){ return enPeriodo(p[0]); });
+  var inqFilt   = inqs.filter(function(p){ return enPeriodo(p[0]); });
+
+  var totalClientes = pagosFilt.reduce(function(s,p){ return s + (parseFloat((p[5]||'0').replace(/[^0-9.]/g,''))||0); }, 0);
+  var totalInqs     = inqFilt.reduce(function(s,p){ return s + (parseFloat((p[4]||'0').replace(/[^0-9.]/g,''))||0); }, 0);
+  var totalGeneral  = totalClientes + totalInqs;
+
+  var citasHoy = STATE.citas.filter(function(c){ return enPeriodo(c[5]) && c[8] === 'Aceptada'; }).length;
+
+  document.getElementById('stat-total').textContent     = '$' + totalGeneral.toFixed(2);
+  document.getElementById('stat-clientes').textContent  = pagosFilt.length;
+  document.getElementById('stat-inquilinos-monto').textContent = '$' + totalInqs.toFixed(2);
+  document.getElementById('stat-citas-hoy').textContent = citasHoy;
+
+  // Gráfica por barbero
+  var porBarbero = {};
+  pagosFilt.forEach(function(p) {
+    var b = p[3] || 'Otros';
+    porBarbero[b] = (porBarbero[b]||0) + (parseFloat((p[5]||'0').replace(/[^0-9.]/g,''))||0);
+  });
+  var barberos = Object.keys(porBarbero);
+  var maxVal   = Math.max.apply(null, barberos.map(function(b){ return porBarbero[b]; })) || 1;
+  var colores  = ['','blue','gold','','blue'];
+
+  var barHtml = '';
+  if (!barberos.length) {
+    barHtml = '<div class="empty" style="width:100%"><p>Sin datos en este período</p></div>';
+  } else {
+    barberos.forEach(function(b, i) {
+      var pct = Math.round((porBarbero[b]/maxVal)*90);
+      barHtml += '<div class="bar-col"><div class="bar ' + (colores[i%5]||'') + '" style="height:' + pct + 'px"></div><div class="bar-lbl">$' + porBarbero[b].toFixed(0) + '<br>' + b.replace('Abelardo','Abel').substring(0,6) + '</div></div>';
+    });
+  }
+  document.getElementById('bar-chart').innerHTML = barHtml;
+
+  // Lista últimos pagos
+  var ultimos = pagosFilt.slice(-10).reverse();
+  if (!ultimos.length) {
+    document.getElementById('pagos-clientes-list').innerHTML = '<div class="empty"><div class="empty-icon">💵</div><p>Sin pagos en este período</p></div>';
+    return;
+  }
+  var ph = '';
+  ultimos.forEach(function(p) {
+    ph += '<div class="pago-row"><div class="pago-info"><p>' + (p[1]||'Cliente') + '</p><small>' + (p[3]||'') + ' · ' + (p[4]||'Servicio') + ' · ' + (p[6]||'') + '</small></div><div class="pago-monto">' + (p[5]||'$0') + '</div></div>';
+  });
+  document.getElementById('pagos-clientes-list').innerHTML = ph;
+}
+
+// ──────────────────────────────────────────────────────────────────
+//  RENDER INQUILINOS
+// ──────────────────────────────────────────────────────────────────
+function filtrarInquilino(f, btn) {
+  STATE.filtroInquilino = f;
+  document.querySelectorAll('#tab-inquilinos .pill').forEach(function(p){ p.classList.remove('active'); });
+  btn.classList.add('active');
+  renderInquilinos();
+}
+
+function renderInquilinos() {
+  var lista = STATE.pagosInquilinos;
+  if (STATE.filtroInquilino !== 'todos') {
+    lista = lista.filter(function(p){ return (p[2]||'').toLowerCase().indexOf(STATE.filtroInquilino.toLowerCase()) !== -1; });
+  }
+
+  var hoy = new Date();
+  var estesMes = lista.filter(function(p){
+    var f = new Date(p[0]);
+    return f.getMonth() === hoy.getMonth() && f.getFullYear() === hoy.getFullYear();
+  });
+  var totalMes = estesMes.reduce(function(s,p){ return s + (parseFloat((p[4]||'0').replace(/[^0-9.]/g,''))||0); }, 0);
+
+  document.getElementById('stat-renta-mes').textContent = '$' + totalMes.toFixed(2);
+  document.getElementById('stat-pagos-inq').textContent = lista.length;
+
+  var ultimos = lista.slice(-20).reverse();
+  if (!ultimos.length) {
+    document.getElementById('inquilinos-list').innerHTML = '<div class="empty"><div class="empty-icon">🏠</div><p>Sin registros</p></div>';
+    return;
+  }
+  var ih = '';
+  ultimos.forEach(function(p) {
+    ih += '<div class="pago-row"><div class="pago-info"><p>' + (p[1]||'Inquilino') + '</p><small>' + (p[2]||'') + ' · ' + (p[3]||'') + ' · ' + (p[6]||'') + ' · ' + (p[5]||'') + '</small></div><div class="pago-monto">' + (p[4]||'$0') + '</div></div>';
+  });
+  document.getElementById('inquilinos-list').innerHTML = ih;
+}
+
+// ──────────────────────────────────────────────────────────────────
+//  WHATSAPP
+// ──────────────────────────────────────────────────────────────────
+function abrirWhatsApp(tel, nombre) {
+  var msg = encodeURIComponent('Hola ' + nombre + ', te contactamos de The Abelardo Barber Shop 💈');
+  window.open('https://wa.me/' + tel.replace(/[^0-9]/g,'') + '?text=' + msg, '_blank');
+}
+
+// ──────────────────────────────────────────────────────────────────
+//  TOAST
+// ──────────────────────────────────────────────────────────────────
+function showToast(msg, tipo) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + (tipo||'');
+  setTimeout(function(){ t.className = 'toast'; }, 3000);
+}
+
+// ──────────────────────────────────────────────────────────────────
+//  CERRAR MODAL AL TOCAR OVERLAY
+// ──────────────────────────────────────────────────────────────────
+document.getElementById('modal-postpone').addEventListener('click', function(e){
+  if (e.target === this) cerrarModal();
+});
+
+// ──────────────────────────────────────────────────────────────────
+//  SERVICE WORKER (PWA)
+// ──────────────────────────────────────────────────────────────────
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(function(){});
+}
+</script>
+</body>
+</html>
