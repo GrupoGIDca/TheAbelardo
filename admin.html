@@ -259,7 +259,11 @@ html,body{height:100%;background:var(--black);color:var(--cream);font-family:'Ba
         <div id="chart-empty" class="empty" style="display:none;padding:1rem;"><p>Sin datos aún</p></div>
       </div>
       <div class="card">
-        <div class="card-title">Últimos cobros</div>
+        <div class="card-title">⏳ Pagos de clientes — Pendientes de aprobación</div>
+        <div id="pagos-clientes-pendientes"><div class="loading"><div class="spinner"></div></div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">✅ Últimos cobros aprobados</div>
         <div id="cobros-list"><div class="loading"><div class="spinner"></div></div></div>
       </div>
     </div>
@@ -341,7 +345,7 @@ html,body{height:100%;background:var(--black);color:var(--cream);font-family:'Ba
 
 <script>
 // ── CONFIG ──
-var SCRIPT_URL   = "https://script.google.com/macros/s/TU_SCRIPT_ID_AQUI/exec";
+var SCRIPT_URL   = "https://script.google.com/macros/s/AKfycbzGqAalvFLNsY2znvcgavCWLihpqT-p3tBIztMwVJ10go3b7Fyy9rrpjrSVErmv1CI04w/exec";
 var PIN_ADMIN    = "2006";   // PIN de Abelardo — CAMBIA ANTES DE PUBLICAR
 var PIN_VIEWER   = "1234";   // PIN de solo lectura (tuyo) — CAMBIA ANTES DE PUBLICAR
 var RENTA_SEMANAL = 25;
@@ -584,7 +588,7 @@ function renderIngresos() {
   // Citas por cobrar (aceptadas, no cobradas)
   var porCobrar = STATE.citas.filter(function(c){ return c[9]==='Aceptada' && c[10]!=='Cobrado'; });
 
-  var totalCobros = STATE.pagosClientes.filter(function(p){ return enPeriodo(p[0]); })
+  var totalCobros = STATE.pagosClientes.filter(function(p){ return enPeriodo(p[0]) && p[9]==='Aprobado'; })
     .reduce(function(s,p){ return s+parseMonto(p[5]); },0);
   var totalRentas = rentas.reduce(function(s,p){ return s+parseMonto(p[4]); },0);
 
@@ -647,15 +651,42 @@ function renderIngresos() {
     });
   }
 
-  // Lista últimos cobros
-  var ultimos = STATE.pagosClientes.filter(function(p){ return enPeriodo(p[0]); }).slice(-8).reverse();
+  // ── Pagos clientes pendientes de aprobación ──
+  // Pagos Clientes cols: [0]Fecha [1]Cliente [2]Tel [3]Barbero [4]Servicio [5]Monto [6]Método [7]Notas [8]Comprobante [9]Estado [10]rowIndex
+  var pendClientes = STATE.pagosClientes.filter(function(p){ return !p[9]||p[9]==='Pendiente'; });
+  if (!pendClientes.length) {
+    document.getElementById('pagos-clientes-pendientes').innerHTML='<div class="empty" style="padding:.8rem;"><p>Sin pagos pendientes</p></div>';
+  } else {
+    var pc='';
+    pendClientes.forEach(function(p) {
+      var ri = p[10];
+      var comp = p[8] ? '<a href="'+p[8]+'" target="_blank" style="color:var(--gold);margin-left:.3rem;font-size:.65rem;">📎</a>' : '';
+      pc += '<div class="pago-row">';
+      pc += '<div class="pago-info"><p>'+esc(p[1])+comp+'</p>';
+      pc += '<small>'+esc(p[3])+' · '+esc(p[4])+' · '+esc(p[6])+' · '+esc(p[0])+'</small></div>';
+      pc += '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:.3rem;">';
+      pc += '<div class="pago-monto">'+esc(p[5]).replace('CAD','USD')+'</div>';
+      if (STATE.rol==='admin') {
+        pc += '<div style="display:flex;gap:.3rem;">';
+        pc += '<button class="action-btn btn-approve" onclick="aprobarPagoCliente('+ri+',true)">✓ Aprobar</button>';
+        pc += '<button class="action-btn btn-reject" onclick="aprobarPagoCliente('+ri+',false)">✕</button>';
+        pc += '</div>';
+      }
+      pc += '</div></div>';
+    });
+    document.getElementById('pagos-clientes-pendientes').innerHTML=pc;
+  }
+
+  // ── Lista últimos cobros aprobados ──
+  var ultimos = STATE.pagosClientes.filter(function(p){ return p[9]==='Aprobado' && enPeriodo(p[0]); }).slice(-8).reverse();
   if (!ultimos.length) {
-    document.getElementById('cobros-list').innerHTML='<div class="empty" style="padding:1rem;"><p>Sin cobros en este período</p></div>';
+    document.getElementById('cobros-list').innerHTML='<div class="empty" style="padding:.8rem;"><p>Sin cobros aprobados en este período</p></div>';
   } else {
     var ph='';
     ultimos.forEach(function(p) {
       var comp = p[8] ? '<a href="'+p[8]+'" target="_blank" style="color:var(--gold);font-size:.65rem;margin-left:.3rem;">📎</a>' : '';
-      ph += '<div class="pago-row"><div class="pago-info"><p>'+esc(p[1])+comp+'</p><small>'+esc(p[3])+' · '+esc(p[4])+' · '+esc(p[6])+' · '+esc(p[0])+'</small></div>';
+      ph += '<div class="pago-row"><div class="pago-info"><p>'+esc(p[1])+comp+'</p>';
+      ph += '<small>'+esc(p[3])+' · '+esc(p[4])+' · '+esc(p[6])+' · '+esc(p[0])+'</small></div>';
       ph += '<div class="pago-monto">'+esc(p[5]).replace('CAD','USD')+'</div></div>';
     });
     document.getElementById('cobros-list').innerHTML=ph;
@@ -728,8 +759,8 @@ function renderInquilinos() {
       ph += '<div class="pago-monto">'+esc(p[4]).replace('CAD','USD')+'</div>';
       if (STATE.rol==='admin') {
         ph += '<div style="display:flex;gap:.3rem;">';
-        ph += '<button class="action-btn btn-approve" onclick="aprobarInquilino('+ri+',\'Aprobado\')">✓</button>';
-        ph += '<button class="action-btn btn-reject" onclick="aprobarInquilino('+ri+',\'Rechazado\')">✕</button>';
+        ph += '<button class="action-btn btn-approve" onclick="aprobarInquilino('+ri+',true)">✓</button>';
+        ph += '<button class="action-btn btn-reject" onclick="aprobarInquilino('+ri+',false)">✕</button>';
         ph += '</div>';
       }
       ph += '</div></div>';
@@ -756,14 +787,27 @@ function renderInquilinos() {
   }
 }
 
+// ── APROBAR PAGO CLIENTE ──
+function aprobarPagoCliente(ri, aprobado) {
+  var estado = aprobado ? 'Aprobado' : 'Rechazado';
+  apiPost({ tipo:'aprobar_pago_cliente', rowIndex:ri, estado:estado })
+  .then(function() {
+    var p = STATE.pagosClientes.find(function(x){ return x[10]==ri; });
+    if (p) p[9]=estado;
+    renderIngresos();
+    showToast(aprobado?'✅ Pago aprobado':'❌ Pago rechazado', aprobado?'success':'error');
+  }).catch(function(){ showToast('Error','error'); });
+}
+
 // ── APROBAR INQUILINO ──
-function aprobarInquilino(ri, estado) {
+function aprobarInquilino(ri, aprobado) {
+  var estado = aprobado ? 'Aprobado' : 'Rechazado';
   apiPost({ tipo:'aprobar_inquilino', rowIndex:ri, estado:estado })
   .then(function() {
     var p = STATE.pagosInquilinos.find(function(x){ return x[11]==ri; });
     if (p) p[10]=estado;
     renderInquilinos();
-    showToast(estado==='Aprobado'?'✅ Pago aprobado':'❌ Pago rechazado', estado==='Aprobado'?'success':'error');
+    showToast(aprobado?'✅ Pago aprobado':'❌ Pago rechazado', aprobado?'success':'error');
   }).catch(function(){ showToast('Error','error'); });
 }
 
