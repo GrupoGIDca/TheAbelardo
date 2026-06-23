@@ -2,24 +2,25 @@
   "name": "Abelardo Admin",
   "short_name": "Admin",
   "description": "Panel de administración — The Abelardo Barber Shop",
-  "start_url": "/admin.html",
+  "start_url": "/TheAbelardo/admin.html",
   "display": "standalone",
   "background_color": "#0c0b09",
   "theme_color": "#0c0b09",
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "icon-admin-192.png",
+      "src": "/TheAbelardo/icon-admin-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "icon-admin-512.png",
+      "src": "/TheAbelardo/icon-admin-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
     }
   ],
-  "lang": "es"
+  "lang": "es",
+  "scope": "/TheAbelardo/"
 }
