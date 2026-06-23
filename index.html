@@ -2,7 +2,14 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0c0b09">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Abelardo Barber">
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
     <title>The Abelardo Barber Shop | Est. 2006</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Barlow+Condensed:wght@400;500;600;700;800&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
@@ -582,6 +589,61 @@
         .fade-in.visible { opacity:1; transform:translateY(0); }
 
         /* ═══ RESPONSIVE ═══ */
+
+        /* ═══ OFFLINE BANNER ═══ */
+        .offline-banner {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
+            background: #e67e22; color: #fff;
+            padding: .6rem 1.2rem;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: .8rem; font-weight: 700;
+            letter-spacing: .1em; text-transform: uppercase;
+            text-align: center;
+            transform: translateY(-100%);
+            transition: transform .3s ease;
+        }
+        .offline-banner.visible { transform: translateY(0); }
+        .offline-banner.back-online { background: var(--green, #2ecc71); }
+
+        /* Disabled form state */
+        .form-offline { opacity: .5; pointer-events: none; }
+        .btn-offline {
+            background: var(--muted, #7a7060) !important;
+            cursor: not-allowed !important;
+            border-color: var(--muted, #7a7060) !important;
+        }
+
+        /* ═══ MOBILE PWA FIXES ═══ */
+        * { -webkit-tap-highlight-color: transparent; }
+        html { scroll-behavior: smooth; -webkit-overflow-scrolling: touch; }
+        body { -webkit-text-size-adjust: 100%; }
+
+        /* Safe area for iPhone notch */
+        .nav { padding-left: max(2rem, env(safe-area-inset-left)); padding-right: max(2rem, env(safe-area-inset-right)); }
+        footer { padding-bottom: max(2rem, env(safe-area-inset-bottom)); }
+
+        /* Prevent horizontal overflow */
+        .section { overflow-x: hidden; }
+        img { max-width: 100%; height: auto; }
+
+        /* Touch-friendly buttons */
+        .cta-primary, .cta-secondary, .btn-submit, .action-btn {
+            min-height: 44px;
+            touch-action: manipulation;
+        }
+
+        /* Fix gallery on mobile */
+        .gallery-placeholder { grid-template-columns: repeat(2,1fr); }
+        .gallery-item { aspect-ratio: 1/1; }
+
+        /* Fix form inputs on iOS - prevent zoom */
+        input, select, textarea {
+            font-size: 16px !important;
+        }
+
+        /* Fix stats band overflow */
+        .stats-band { overflow-x: hidden; }
+
         @media(max-width:640px){
             .stats-band { grid-template-columns:repeat(2,1fr); }
             .stat-item:nth-child(2){ border-right:none; }
@@ -597,6 +659,11 @@
 <body>
 
 <!-- NAV -->
+<!-- OFFLINE BANNER -->
+<div class="offline-banner" id="offline-banner">
+    📵 Sin conexión — los formularios no están disponibles
+</div>
+
 <nav class="nav" id="main-nav">
     <div class="nav-logo"><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20680%20280%22%3E%0A%3Cstyle%3E%0A%20%20.lt%20%7B%20fill%3A%20%23f0ece3%3B%20font-family%3A%20Arial%20Black%2C%20Impact%2C%20Arial%2C%20sans-serif%3B%20font-weight%3A%20900%3B%20%7D%0A%20%20.ls%20%7B%20fill%3A%20%23f0ece3%3B%20font-family%3A%20Arial%2C%20sans-serif%3B%20font-weight%3A%20400%3B%20letter-spacing%3A%2014px%3B%20%7D%0A%20%20.fl%20%7B%20fill%3A%20none%3B%20stroke%3A%20%23f0ece3%3B%20stroke-linecap%3A%20round%3B%20stroke-linejoin%3A%20round%3B%20%7D%0A%3C/style%3E%0A%3Cline%20x1%3D%2280%22%20y1%3D%2230%22%20x2%3D%22230%22%20y2%3D%2230%22%20class%3D%22fl%22%20stroke-width%3D%221.2%22%20opacity%3D%220.5%22/%3E%0A%3Cpath%20d%3D%22M%20150%2030%20C%20138%2018%20132%204%20142%20-4%20C%20152%20-12%20162%200%20155%2010%22%20class%3D%22fl%22%20stroke-width%3D%221.8%22/%3E%0A%3Cpath%20d%3D%22M%2080%2030%20Q%20100%2012%20122%2024%20Q%20138%2032%20155%2028%22%20class%3D%22fl%22%20stroke-width%3D%221.8%22/%3E%0A%3Cline%20x1%3D%22450%22%20y1%3D%2230%22%20x2%3D%22600%22%20y2%3D%2230%22%20class%3D%22fl%22%20stroke-width%3D%221.2%22%20opacity%3D%220.5%22/%3E%0A%3Cpath%20d%3D%22M%20530%2030%20C%20542%2018%20548%204%20538%20-4%20C%20528%20-12%20518%200%20525%2010%22%20class%3D%22fl%22%20stroke-width%3D%221.8%22/%3E%0A%3Cpath%20d%3D%22M%20600%2030%20Q%20580%2012%20558%2024%20Q%20542%2032%20525%2028%22%20class%3D%22fl%22%20stroke-width%3D%221.8%22/%3E%0A%3Ctext%20x%3D%22340%22%20y%3D%2292%22%20text-anchor%3D%22middle%22%20class%3D%22lt%22%20font-size%3D%2260%22%20letter-spacing%3D%2212%22%3ETHE%3C/text%3E%0A%3Ctext%20x%3D%22340%22%20y%3D%22172%22%20text-anchor%3D%22middle%22%20class%3D%22lt%22%20font-size%3D%2282%22%20letter-spacing%3D%22-2%22%3EABELARDO%3C/text%3E%0A%3Cline%20x1%3D%2280%22%20y1%3D%22185%22%20x2%3D%22600%22%20y2%3D%22185%22%20class%3D%22fl%22%20stroke-width%3D%221%22%20opacity%3D%220.5%22/%3E%0A%3Ctext%20x%3D%22328%22%20y%3D%22222%22%20text-anchor%3D%22middle%22%20class%3D%22ls%22%20font-size%3D%2223%22%3EBARBER%20SHOP%3C/text%3E%0A%3Cline%20x1%3D%2280%22%20y1%3D%22235%22%20x2%3D%22600%22%20y2%3D%22235%22%20class%3D%22fl%22%20stroke-width%3D%221%22%20opacity%3D%220.5%22/%3E%0A%3Ctext%20x%3D%22340%22%20y%3D%22272%22%20text-anchor%3D%22middle%22%20class%3D%22lt%22%20font-size%3D%2238%22%20letter-spacing%3D%2222%22%3E2006%3C/text%3E%0A%3C/svg%3E" alt="The Abelardo Barber Shop" style="height:44px;width:auto;"></div>
     <div class="nav-links">
@@ -1464,6 +1531,41 @@
     var today = new Date().toISOString().split('T')[0];
     var dateInput = document.querySelector('input[name="r_fecha"]');
     if (dateInput) dateInput.setAttribute('min', today);
+    // ── DETECCIÓN DE CONEXIÓN ──
+    var offlineBanner = document.getElementById('offline-banner');
+    var allForms = document.querySelectorAll('form');
+    var allSubmitBtns = document.querySelectorAll('.btn-submit');
+
+    function setOfflineMode(isOffline) {
+        if (isOffline) {
+            offlineBanner.textContent = '📵 Sin conexión — los formularios no están disponibles';
+            offlineBanner.classList.remove('back-online');
+            offlineBanner.classList.add('visible');
+            allForms.forEach(function(f) { f.classList.add('form-offline'); });
+            allSubmitBtns.forEach(function(b) { b.classList.add('btn-offline'); b.disabled = true; });
+        } else {
+            offlineBanner.textContent = '✅ Conexión restaurada';
+            offlineBanner.classList.add('back-online');
+            offlineBanner.classList.add('visible');
+            allForms.forEach(function(f) { f.classList.remove('form-offline'); });
+            allSubmitBtns.forEach(function(b) { b.classList.remove('btn-offline'); b.disabled = false; });
+            setTimeout(function() { offlineBanner.classList.remove('visible'); }, 3000);
+        }
+    }
+
+    // Verificar estado inicial
+    if (!navigator.onLine) setOfflineMode(true);
+
+    // Escuchar cambios de conexión
+    window.addEventListener('offline', function() { setOfflineMode(true); });
+    window.addEventListener('online',  function() { setOfflineMode(false); });
+
+    // ── PWA Service Worker ──
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js')
+            .then(function(reg) { console.log('SW registered'); })
+            .catch(function(e) { console.log('SW error:', e); });
+    }
 </script>
 </body>
 </html>
