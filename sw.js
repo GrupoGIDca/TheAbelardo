@@ -1,92 +1,77 @@
 // ═══════════════════════════════════════════════════
-//  Service Worker — The Abelardo Barber Shop
-//  Maneja caché para página pública Y admin PWA
+//  Service Worker — The Abelardo Barber Shop v4
+//  Usa paths relativos — funciona en cualquier subfolder
 // ═══════════════════════════════════════════════════
-var CACHE_NAME = 'abelardo-v3';
-var CACHE_ADMIN = 'abelardo-admin-v3';
+var CACHE = 'abelardo-v4';
 
-var ASSETS_PUBLIC = [
-  '/TheAbelardo/',
-  '/TheAbelardo/index.html',
-  '/TheAbelardo/manifest.json',
-  '/TheAbelardo/icon-192.png',
-  '/TheAbelardo/icon-512.png'
+var ASSETS = [
+  './index.html',
+  './admin.html',
+  './manifest.json',
+  './manifest-admin.json',
+  './icon-192.png',
+  './icon-512.png',
+  './icon-admin-192.png',
+  './icon-admin-512.png'
 ];
 
-var ASSETS_ADMIN = [
-  '/TheAbelardo/admin.html',
-  '/TheAbelardo/manifest-admin.json',
-  '/TheAbelardo/icon-admin-192.png',
-  '/TheAbelardo/icon-admin-512.png'
-];
-
-// ── Install: cachear todos los assets ──
 self.addEventListener('install', function(e) {
   e.waitUntil(
-    Promise.all([
-      caches.open(CACHE_NAME).then(function(c) { return c.addAll(ASSETS_PUBLIC); }),
-      caches.open(CACHE_ADMIN).then(function(c) { return c.addAll(ASSETS_ADMIN); })
-    ])
+    caches.open(CACHE).then(function(c) {
+      return Promise.allSettled(
+        ASSETS.map(function(url) {
+          return c.add(url).catch(function(err) {
+            console.log('Cache miss (OK):', url, err);
+          });
+        })
+      );
+    })
   );
   self.skipWaiting();
 });
 
-// ── Activate: limpiar caches viejos ──
 self.addEventListener('activate', function(e) {
   e.waitUntil(
     caches.keys().then(function(keys) {
       return Promise.all(
-        keys.filter(function(k) {
-          return k !== CACHE_NAME && k !== CACHE_ADMIN;
-        }).map(function(k) { return caches.delete(k); })
+        keys.filter(function(k) { return k !== CACHE; })
+            .map(function(k) { return caches.delete(k); })
       );
     })
   );
   self.clients.claim();
 });
 
-// ── Fetch: red primero para API, caché para shell ──
 self.addEventListener('fetch', function(e) {
   var url = e.request.url;
 
-  // API calls — siempre red, nunca caché
+  // API de Google — siempre red, nunca caché
   if (url.includes('script.google.com') || url.includes('googleapis.com')) {
     e.respondWith(
       fetch(e.request).catch(function() {
-        return new Response(JSON.stringify({ status:'offline', mensaje:'Sin conexión' }), {
-          headers: { 'Content-Type': 'application/json' }
-        });
+        return new Response(
+          JSON.stringify({ status: 'offline', mensaje: 'Sin conexión' }),
+          { headers: { 'Content-Type': 'application/json' } }
+        );
       })
     );
     return;
   }
 
-  // Google Fonts — caché primero
-  if (url.includes('fonts.googleapis.com') || url.includes('fonts.gstatic.com')) {
-    e.respondWith(
-      caches.match(e.request).then(function(cached) {
-        return cached || fetch(e.request).then(function(resp) {
-          var copy = resp.clone();
-          caches.open(CACHE_NAME).then(function(c) { c.put(e.request, copy); });
-          return resp;
-        });
-      })
-    );
-    return;
-  }
-
-  // Shell HTML y assets — caché con actualización en background
+  // Todo lo demás — caché primero, red como fallback
   e.respondWith(
     caches.match(e.request).then(function(cached) {
-      var fetchPromise = fetch(e.request).then(function(resp) {
-        if (resp && resp.status === 200) {
+      if (cached) return cached;
+      return fetch(e.request).then(function(resp) {
+        if (resp && resp.status === 200 && resp.type !== 'opaque') {
           var copy = resp.clone();
-          var cacheName = url.includes('admin') ? CACHE_ADMIN : CACHE_NAME;
-          caches.open(cacheName).then(function(c) { c.put(e.request, copy); });
+          caches.open(CACHE).then(function(c) { c.put(e.request, copy); });
         }
         return resp;
       });
-      return cached || fetchPromise;
+    }).catch(function() {
+      // Si falla todo, intentar servir index.html cacheado
+      return caches.match('./index.html');
     })
   );
 });
