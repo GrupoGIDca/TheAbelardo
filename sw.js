@@ -6,18 +6,18 @@ var CACHE_NAME = 'abelardo-v3';
 var CACHE_ADMIN = 'abelardo-admin-v3';
 
 var ASSETS_PUBLIC = [
-  './',
-  './index.html',
-  './manifest.json',
-  './icon-192.png',
-  './icon-512.png'
+  '/TheAbelardo/',
+  '/TheAbelardo/index.html',
+  '/TheAbelardo/manifest.json',
+  '/TheAbelardo/icon-192.png',
+  '/TheAbelardo/icon-512.png'
 ];
 
 var ASSETS_ADMIN = [
-  './admin.html',
-  './manifest-admin.json',
-  './icon-admin-192.png',
-  './icon-admin-512.png'
+  '/TheAbelardo/admin.html',
+  '/TheAbelardo/manifest-admin.json',
+  '/TheAbelardo/icon-admin-192.png',
+  '/TheAbelardo/icon-admin-512.png'
 ];
 
 // ── Install: cachear todos los assets ──
