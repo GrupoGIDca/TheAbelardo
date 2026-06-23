@@ -698,13 +698,28 @@ function renderIngresos() {
   var pagos = STATE.pagosClientes;
   var inqs  = STATE.pagosInquilinos;
 
+  function parseFecha(fechaStr) {
+    // Formato: "23/06/2026 01:23" o "23/06/2026"
+    if (!fechaStr) return null;
+    var partes = fechaStr.split(' ')[0].split('/');
+    if (partes.length === 3) {
+      // dd/MM/yyyy
+      return new Date(+partes[2], +partes[1]-1, +partes[0]);
+    }
+    // Intentar parseo directo como fallback
+    var f = new Date(fechaStr);
+    return isNaN(f) ? null : f;
+  }
+
   function enPeriodo(fechaStr) {
     if (!fechaStr) return false;
-    var f = new Date(fechaStr);
+    var f = parseFecha(fechaStr);
+    if (!f || isNaN(f)) return false;
     if (STATE.filtroPeriodo === 'hoy') {
       return f.toDateString() === hoy.toDateString();
     } else if (STATE.filtroPeriodo === 'semana') {
       var inicioSemana = new Date(hoy); inicioSemana.setDate(hoy.getDate() - hoy.getDay());
+      inicioSemana.setHours(0,0,0,0);
       return f >= inicioSemana;
     } else {
       return f.getMonth() === hoy.getMonth() && f.getFullYear() === hoy.getFullYear();
@@ -714,15 +729,19 @@ function renderIngresos() {
   var pagosFilt = pagos.filter(function(p){ return enPeriodo(p[0]); });
   var inqFilt   = inqs.filter(function(p){ return enPeriodo(p[0]); });
 
-  var totalClientes = pagosFilt.reduce(function(s,p){ return s + (parseFloat((p[5]||'0').replace(/[^0-9.]/g,''))||0); }, 0);
-  var totalInqs     = inqFilt.reduce(function(s,p){ return s + (parseFloat((p[4]||'0').replace(/[^0-9.]/g,''))||0); }, 0);
+  function parseMonto(str) {
+    return parseFloat((str||'0').replace(/[^0-9.]/g,'')) || 0;
+  }
+
+  var totalClientes = pagosFilt.reduce(function(s,p){ return s + parseMonto(p[5]); }, 0);
+  var totalInqs     = inqFilt.reduce(function(s,p){ return s + parseMonto(p[4]); }, 0);
   var totalGeneral  = totalClientes + totalInqs;
 
-  var citasHoy = STATE.citas.filter(function(c){ return enPeriodo(c[5]) && c[8] === 'Aceptada'; }).length;
+  var citasHoy = STATE.citas.filter(function(c){ return enPeriodo(c[0]); }).length;
 
-  document.getElementById('stat-total').textContent     = '$' + totalGeneral.toFixed(2);
+  document.getElementById('stat-total').textContent     = 'USD $' + totalGeneral.toFixed(2);
   document.getElementById('stat-clientes').textContent  = pagosFilt.length;
-  document.getElementById('stat-inquilinos-monto').textContent = '$' + totalInqs.toFixed(2);
+  document.getElementById('stat-inquilinos-monto').textContent = 'USD $' + totalInqs.toFixed(2);
   document.getElementById('stat-citas-hoy').textContent = citasHoy;
 
   // Gráfica por barbero
@@ -741,7 +760,7 @@ function renderIngresos() {
   } else {
     barberos.forEach(function(b, i) {
       var pct = Math.round((porBarbero[b]/maxVal)*90);
-      barHtml += '<div class="bar-col"><div class="bar ' + (colores[i%5]||'') + '" style="height:' + pct + 'px"></div><div class="bar-lbl">$' + porBarbero[b].toFixed(0) + '<br>' + b.replace('Abelardo','Abel').substring(0,6) + '</div></div>';
+      barHtml += '<div class="bar-col"><div class="bar ' + (colores[i%5]||'') + '" style="height:' + pct + 'px"></div><div class="bar-lbl">USD $' + porBarbero[b].toFixed(0) + '<br>' + b.replace('Abelardo','Abel').substring(0,6) + '</div></div>';
     });
   }
   document.getElementById('bar-chart').innerHTML = barHtml;
@@ -754,7 +773,10 @@ function renderIngresos() {
   }
   var ph = '';
   ultimos.forEach(function(p) {
-    ph += '<div class="pago-row"><div class="pago-info"><p>' + (p[1]||'Cliente') + '</p><small>' + (p[3]||'') + ' · ' + (p[4]||'Servicio') + ' · ' + (p[6]||'') + '</small></div><div class="pago-monto">' + (p[5]||'$0') + '</div></div>';
+    // p: [0]Fecha [1]Cliente [2]Tel [3]Barbero [4]Servicio [5]Monto [6]Metodo [7]Notas [8]Comprobante
+    var monto = (p[5]||'0').replace('CAD','USD').trim();
+    var comp = p[8] ? '<a href="' + p[8] + '" target="_blank" style="color:var(--gold);font-size:.65rem;">📎 Ver</a>' : '';
+    ph += '<div class="pago-row"><div class="pago-info"><p>' + (p[1]||'Cliente') + ' ' + comp + '</p><small>' + (p[3]||'') + ' · ' + (p[4]||'') + ' · ' + (p[6]||'') + ' · ' + (p[0]||'') + '</small></div><div class="pago-monto">' + monto + '</div></div>';
   });
   document.getElementById('pagos-clientes-list').innerHTML = ph;
 }
@@ -792,7 +814,11 @@ function renderInquilinos() {
   }
   var ih = '';
   ultimos.forEach(function(p) {
-    ih += '<div class="pago-row"><div class="pago-info"><p>' + (p[1]||'Inquilino') + '</p><small>' + (p[2]||'') + ' · ' + (p[3]||'') + ' · ' + (p[6]||'') + ' · ' + (p[5]||'') + '</small></div><div class="pago-monto">' + (p[4]||'$0') + '</div></div>';
+    // p: [0]Fecha [1]Inquilino [2]Puesto [3]TipoPago [4]Monto [5]Metodo [6]Periodo [7]Notas [8]Comp1 [9]Comp2
+    var monto = (p[4]||'0').replace('CAD','USD').trim();
+    var comp1 = p[8] ? '<a href="' + p[8] + '" target="_blank" style="color:var(--gold);font-size:.65rem;">📎</a>' : '';
+    var comp2 = p[9] ? '<a href="' + p[9] + '" target="_blank" style="color:var(--gold);font-size:.65rem;">📎</a>' : '';
+    ih += '<div class="pago-row"><div class="pago-info"><p>' + (p[1]||'Inquilino') + ' ' + comp1 + comp2 + '</p><small>' + (p[2]||'') + ' · ' + (p[3]||'') + ' · ' + (p[6]||'') + ' · ' + (p[5]||'') + '</small></div><div class="pago-monto">' + monto + '</div></div>';
   });
   document.getElementById('inquilinos-list').innerHTML = ih;
 }
