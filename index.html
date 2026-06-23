@@ -800,6 +800,10 @@
                         <input type="tel" name="r_telefono" placeholder="+1 (514) 000-0000" required>
                     </div>
                 </div>
+                <div class="field">
+                    <label>Correo electrónico</label>
+                    <input type="email" name="r_correo" placeholder="tucorreo@email.com" required>
+                </div>
 
                 <p class="form-section-title">Tu cita</p>
                 <div class="form-row">
@@ -1127,7 +1131,7 @@
                 <p class="day-hours closed-text">Cerrado</p>
             </div>
         </div>
-        <p style="font-size:0.75rem;color:var(--muted);text-align:center;">* Actualiza los horarios según los reales de la barbería.</p>
+        <p style="font-size:0.75rem;color:var(--muted);text-align:center;">* Horarios Actualizados.</p>
 
         <div class="map-placeholder" style="margin-top:1.5rem;">
             <span>🗺️</span>
@@ -1218,6 +1222,7 @@
             tipo: 'reserva',
             nombre: f.r_nombre.value,
             telefono: f.r_telefono.value,
+            correo: f.r_correo.value,
             barbero: f.r_barbero.value,
             servicio: f.r_servicio.value,
             fecha: f.r_fecha.value,
