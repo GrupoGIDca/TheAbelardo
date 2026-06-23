@@ -603,6 +603,7 @@
         <a href="#servicios" class="nav-link">Servicios</a>
         <a href="#galeria" class="nav-link">Galería</a>
         <a href="#reservas" class="nav-link">Reservar</a>
+        <a href="#domicilio" class="nav-link">Domicilio</a>
         <a href="#contacto" class="nav-link">Contacto</a>
         <a href="#pagos" class="nav-btn nav-btn-red">Reportar Pago</a>
     </div>
@@ -625,7 +626,7 @@
         </p>
         <div class="hero-cta" style="animation:fadeUp 0.6s 0.6s ease both;">
             <a href="#reservas" class="cta-primary">Reservar Cita</a>
-            <a href="#servicios" class="cta-secondary">Ver Servicios</a>
+            <a href="#domicilio" class="cta-secondary">Servicio a Domicilio</a>
         </div>
     </div>
     <div class="scroll-hint">
@@ -874,6 +875,97 @@
     </div>
 </section>
 
+
+<!-- DOMICILIO -->
+<section class="section" id="domicilio" style="padding-top:0;">
+    <div class="fade-in">
+        <div class="divider-line"><span>Domicilio</span></div>
+        <p class="section-label">Servicio a Domicilio</p>
+        <h2 class="section-title">Te visitamos <em>donde estés</em></h2>
+        <p class="section-subtitle">Agenda tu corte en casa. Cubrimos Guatire y alrededores. Confirmaremos disponibilidad por WhatsApp.</p>
+
+        <div class="trust-banner">
+            <span class="trust-icon">🏠</span>
+            <p class="trust-text"><strong>Comodidad total.</strong> El mismo servicio de la barbería, en tu hogar. Aplica recargo por desplazamiento según la zona.</p>
+        </div>
+
+        <div class="booking-card">
+            <form id="domicilio-form">
+                <p class="form-section-title">Tus datos</p>
+                <div class="form-row">
+                    <div class="field">
+                        <label>Nombre completo</label>
+                        <input type="text" name="d_nombre" placeholder="Ej. Juan García" required>
+                    </div>
+                    <div class="field">
+                        <label>Teléfono / WhatsApp</label>
+                        <input type="tel" name="d_telefono" placeholder="+58 424-0000000" required>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Dirección exacta</label>
+                    <textarea name="d_direccion" rows="2" placeholder="Urb., calle, casa o apto, referencia..." required></textarea>
+                </div>
+
+                <p class="form-section-title">Tu cita</p>
+                <div class="form-row">
+                    <div class="field">
+                        <label>Servicio</label>
+                        <select name="d_servicio" required>
+                            <option value="personalizado" selected>Personalizado</option>
+                            <option value="corte">Corte Clásico</option>
+                            <option value="barba">Arreglo de Barba</option>
+                            <option value="combo">Corte + Barba</option>
+                            <option value="nino">Corte Niño</option>
+                            <option value="fade">Degradado / Fade</option>
+                            <option value="design">Diseño / Lineup</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label>¿Cuántas personas?</label>
+                        <select name="d_personas">
+                            <option value="1" selected>1 persona</option>
+                            <option value="2">2 personas</option>
+                            <option value="3">3 personas</option>
+                            <option value="4+">4 o más</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="field">
+                        <label>Fecha deseada</label>
+                        <input type="date" name="d_fecha" required>
+                    </div>
+                    <div class="field">
+                        <label>Hora preferida</label>
+                        <select name="d_hora" required>
+                            <option value="" disabled selected>Seleccionar</option>
+                            <option value="8:00">8:00 AM</option>
+                            <option value="9:00">9:00 AM</option>
+                            <option value="10:00">10:00 AM</option>
+                            <option value="11:00">11:00 AM</option>
+                            <option value="12:00">12:00 PM</option>
+                            <option value="13:00">1:00 PM</option>
+                            <option value="14:00">2:00 PM</option>
+                            <option value="15:00">3:00 PM</option>
+                            <option value="16:00">4:00 PM</option>
+                            <option value="17:00">5:00 PM</option>
+                            <option value="18:00">6:00 PM</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Notas adicionales (opcional)</label>
+                    <textarea name="d_notas" rows="2" placeholder="Ej. edificio con portero, preferencia de barbero, indicaciones especiales..."></textarea>
+                </div>
+
+                <button type="submit" class="btn-submit" id="btn-domicilio">Solicitar Domicilio →</button>
+                <p class="form-note" id="domicilio-status">Confirmaremos disponibilidad y detalles por WhatsApp.</p>
+            </form>
+        </div>
+    </div>
+</section>
+
 <!-- PAGOS PANEL -->
 <section class="section" id="pagos" style="padding-top:0;">
     <div class="fade-in">
@@ -892,23 +984,24 @@
             <div id="tab-cliente" class="tab-panel active">
                 <div class="booking-card">
                     <form id="pago-cliente-form">
-                        <p class="form-section-title">Datos del Cliente</p>
+                        <p class="form-section-title">Tus datos</p>
                         <div class="form-row">
                             <div class="field">
-                                <label>Nombre del cliente</label>
+                                <label>Tu nombre <span style="color:var(--red)">*</span></label>
                                 <input type="text" name="pc_nombre" placeholder="Ej. Juan García" required>
                             </div>
                             <div class="field">
-                                <label>Teléfono (opcional)</label>
-                                <input type="tel" name="pc_tel" placeholder="+58 424-2272212">
+                                <label>Tu teléfono (opcional)</label>
+                                <input type="tel" name="pc_tel" placeholder="+58 424-0000000">
                             </div>
                         </div>
+
+                        <p class="form-section-title">Tu servicio</p>
                         <div class="form-row">
                             <div class="field">
-                                <label>Barbero que atendió</label>
-                                <select name="pc_barbero" required>
-                                    <option value="" disabled selected>Seleccionar</option>
-                                    <option value="abelardo">Abelardo</option>
+                                <label>¿Quién te atendió?</label>
+                                <select name="pc_barbero">
+                                    <option value="abelardo" selected>Abelardo</option>
                                     <option value="barbero2">Barbero 2</option>
                                     <option value="barbero3">Barbero 3</option>
                                     <option value="barbero4">Barbero 4</option>
@@ -916,24 +1009,25 @@
                                 </select>
                             </div>
                             <div class="field">
-                                <label>Servicio realizado</label>
-                                <select name="pc_servicio" required>
-                                    <option value="" disabled selected>Seleccionar</option>
+                                <label>¿Qué servicio fue?</label>
+                                <select name="pc_servicio">
+                                    <option value="personalizado" selected>Personalizado</option>
                                     <option value="corte">Corte Clásico</option>
                                     <option value="barba">Arreglo de Barba</option>
                                     <option value="combo">Corte + Barba</option>
                                     <option value="nino">Corte Niño</option>
                                     <option value="fade">Degradado / Fade</option>
                                     <option value="design">Diseño / Lineup</option>
-                                    <option value="otro">Otro</option>
+                                    <option value="domicilio">Servicio a Domicilio</option>
                                 </select>
                             </div>
                         </div>
-                        <p class="form-section-title">Detalle del Pago</p>
+
+                        <p class="form-section-title">Tu pago <span style="color:var(--red)">*</span></p>
                         <div class="form-row">
                             <div class="field">
-                                <label>Monto cobrado (CAD)</label>
-                                <input type="number" name="pc_monto" placeholder="20.00" min="0" step="0.01" required>
+                                <label>Monto pagado (USD)</label>
+                                <input type="number" name="pc_monto" placeholder="0.00" min="0" step="0.01" required>
                             </div>
                             <div class="field">
                                 <label>Método de pago</label>
@@ -947,20 +1041,21 @@
                             </div>
                         </div>
                         <div class="field">
-                            <label>Notas (opcional)</label>
-                            <textarea name="pc_notas" rows="2" placeholder="Observaciones del servicio..."></textarea>
+                            <label>Nota (opcional)</label>
+                            <textarea name="pc_notas" rows="2" placeholder="Algo que quieras agregar..."></textarea>
                         </div>
-                        <p class="form-section-title">Comprobante (opcional)</p>
+
+                        <p class="form-section-title">Comprobante <span style="color:var(--red)">*</span></p>
                         <div class="field">
                             <label class="file-label">
                                 <input type="file" id="file-pcliente" accept="image/*,.pdf">
                                 <span class="file-icon-lbl">📸</span>
-                                <span class="file-text"><strong>Subir comprobante</strong><br>Imagen o PDF</span>
+                                <span class="file-text"><strong>Subir foto del comprobante</strong><br>Captura de pantalla, foto o PDF</span>
                             </label>
                             <span class="file-name" id="name-pcliente"></span>
                         </div>
-                        <button type="submit" class="btn-submit" id="btn-pcliente">Registrar Pago →</button>
-                        <p class="form-note" id="pcliente-status">El pago quedará registrado en Google Sheets automáticamente.</p>
+                        <button type="submit" class="btn-submit" id="btn-pcliente">Reportar Pago →</button>
+                        <p class="form-note" id="pcliente-status">Abelardo revisará y aprobará tu pago a la brevedad.</p>
                     </form>
                 </div>
             </div>
@@ -1152,6 +1247,7 @@
         <a href="#servicios" class="footer-link">Servicios</a>
         <a href="#galeria" class="footer-link">Galería</a>
         <a href="#reservas" class="footer-link">Reservar</a>
+        <a href="#domicilio" class="footer-link">Domicilio</a>
         <a href="#pagos" class="footer-link">Pagos</a>
         <a href="#contacto" class="footer-link">Contacto</a>
     </div>
@@ -1258,13 +1354,13 @@
         var datos = {
             tipo: 'pago_cliente',
             nombre: f.pc_nombre.value,
-            telefono: f.pc_tel.value,
-            barbero: f.pc_barbero.value,
-            servicio: f.pc_servicio.value,
+            telefono: f.pc_tel.value || '',
+            barbero: f.pc_barbero.value || 'abelardo',
+            servicio: f.pc_servicio.value || 'personalizado',
             monto: f.pc_monto.value,
             metodo: f.pc_metodo.value,
-            notas: f.pc_notas.value,
-            fecha_hora: new Date().toLocaleString('es-CA')
+            notas: f.pc_notas.value || '',
+            fecha_hora: new Date().toLocaleString('es-VE')
         };
         var fc = document.getElementById('file-pcliente').files[0];
         if (fc) { datos.comprobante_base64 = await archivoABase64(fc); datos.comprobante_nombre = fc.name; datos.comprobante_tipo = fc.type; }
