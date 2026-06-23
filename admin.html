@@ -433,7 +433,7 @@ html,body{height:100%;background:var(--black);color:var(--cream);font-family:'Ba
 // ──────────────────────────────────────────────────────────────────
 //  CONFIG — REEMPLAZA ESTA URL CON LA DE TU APPS SCRIPT
 // ──────────────────────────────────────────────────────────────────
-var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCZUcXeB9up4IYEfIbl0Y5W7pQ9e06NXuu9H73r_2o4cofGvdJKttSYHYJBRWSecyi/exec";
+var SCRIPT_URL = "https://script.google.com/macros/s/TU_SCRIPT_ID_AQUI/exec";
 var PIN_CORRECTO = "2006"; // ⚠️ CAMBIA ESTE PIN ANTES DE PUBLICAR
 
 // ──────────────────────────────────────────────────────────────────
@@ -516,12 +516,16 @@ function apiGet(accion, params) {
   if (params) {
     Object.keys(params).forEach(function(k){ url += '&' + k + '=' + encodeURIComponent(params[k]); });
   }
-  return fetch(url).then(function(r){ return r.json(); });
+  return fetch(url, {
+    method: 'GET',
+    redirect: 'follow'
+  }).then(function(r){ return r.json(); });
 }
 
 function apiPost(datos) {
   return fetch(SCRIPT_URL, {
     method: 'POST',
+    redirect: 'follow',
     body: JSON.stringify(datos)
   }).then(function(r){ return r.json(); });
 }
@@ -529,25 +533,29 @@ function apiPost(datos) {
 function cargarCitas() {
   document.getElementById('citas-list').innerHTML = '<div class="loading"><div class="spinner"></div><br>Cargando...</div>';
   apiGet('citas').then(function(data) {
+    console.log('CITAS:', JSON.stringify(data).substring(0,200));
     STATE.citas = data.filas || [];
     renderCitas();
-  }).catch(function(){
-    document.getElementById('citas-list').innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div><p>Error al cargar. Verifica la URL del script.</p></div>';
+  }).catch(function(err){
+    console.error('Error citas:', err);
+    document.getElementById('citas-list').innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div><p>Error: ' + err.message + '</p></div>';
   });
 }
 
 function cargarPagosClientes() {
   apiGet('pagos_clientes').then(function(data) {
+    console.log('PAGOS CLIENTES:', JSON.stringify(data).substring(0,200));
     STATE.pagosClientes = data.filas || [];
     renderIngresos();
-  }).catch(function(){});
+  }).catch(function(err){ console.error('Error pagos clientes:', err); });
 }
 
 function cargarPagosInquilinos() {
   apiGet('pagos_inquilinos').then(function(data) {
+    console.log('PAGOS INQUILINOS:', JSON.stringify(data).substring(0,200));
     STATE.pagosInquilinos = data.filas || [];
     renderInquilinos();
-  }).catch(function(){});
+  }).catch(function(err){ console.error('Error pagos inquilinos:', err); });
 }
 
 // ──────────────────────────────────────────────────────────────────
