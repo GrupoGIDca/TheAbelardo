@@ -2,20 +2,20 @@
   "name": "The Abelardo Barber Shop",
   "short_name": "Abelardo",
   "description": "Reserva tu cita, reporta pagos y más — Est. 2006",
-  "start_url": "/TheAbelardo/",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#0c0b09",
   "theme_color": "#0c0b09",
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/TheAbelardo/icon-192.png",
+      "src": "./icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/TheAbelardo/icon-512.png",
+      "src": "./icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
@@ -27,5 +27,5 @@
     "business"
   ],
   "lang": "es",
-  "scope": "/TheAbelardo/"
+  "scope": "./"
 }
